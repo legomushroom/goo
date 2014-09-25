@@ -62,8 +62,7 @@ Goo = (function() {
     this.canvas = document.querySelector('#js-canvas');
     this.ctx = this.canvas.getContext('2d');
     this.width = parseInt(this.canvas.getAttribute('width'), 10);
-    this.height = parseInt(this.canvas.getAttribute('height'), 10);
-    return this.isDebug = true;
+    return this.height = parseInt(this.canvas.getAttribute('height'), 10);
   };
 
   Goo.prototype.createCircles = function() {
@@ -163,14 +162,14 @@ Goo = (function() {
     var angle, angle2, angleSize1, angleSize12, angleSize2, angleSize22, deg, dirAngle, dx, intPoint, line1, pX, pY, point1X, point1X2, point1Y, point1Y2, radius, vector1, vector2, vectorAngle;
     this.ctx.beginPath();
     deg = Math.PI / 180;
-    if (o.dir !== 'left') {
-      dx = Math.abs(o.centerLine.start.x - (o.circle.x + o.circle.radius));
+    if (o.dir === 'left') {
+      dx = Math.abs(o.circle.x - o.centerLine.start.x);
     } else {
-      dx = Math.abs(o.centerLine.start.x - (o.circle.x - o.circle.radius));
+      dx = Math.abs(o.circle.x - o.centerLine.start.x);
     }
-    angleSize1 = (90 + dx) * deg;
+    angleSize1 = (90 + (dx / 4)) * deg;
     angleSize12 = angleSize1 + (1 * deg);
-    angleSize2 = (90 - dx) * deg;
+    angleSize2 = (90 - (dx / 4)) * deg;
     angleSize22 = angleSize2 + (1 * deg);
     if (o.side !== 'bottom') {
       if (o.dir === 'left') {
@@ -284,11 +283,11 @@ Goo = (function() {
       it.ctx.clear();
       it.circle2.draw();
       it.circle1.set({
-        x: 200 - this.p * 90,
+        x: 400 - this.p * 260,
         y: it.circle1.y
       });
       return it.gooCircles(it.circle1, it.circle2);
-    }).yoyo(true).repeat(999).start();
+    }).easing(TWEEN.Easing.Elastic.Out).yoyo(true).repeat(999).start();
     return h.startAnimationLoop();
   };
 

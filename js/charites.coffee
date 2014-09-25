@@ -43,7 +43,7 @@ class Goo
     @ctx    = @canvas.getContext('2d')
     @width  = parseInt(@canvas.getAttribute('width'), 10)
     @height = parseInt(@canvas.getAttribute('height'), 10)
-    @isDebug = true
+    # @isDebug = true
 
   createCircles:->
     @circle1 = new Circle
@@ -136,13 +136,13 @@ class Goo
     # y = centerY + sin(angle)*radius
     deg = Math.PI/180
 
-    if o.dir isnt 'left'
-      dx = Math.abs o.centerLine.start.x - (o.circle.x+o.circle.radius)
+    if o.dir is 'left'
+      dx = Math.abs o.circle.x - o.centerLine.start.x
     else
-      dx = Math.abs o.centerLine.start.x - (o.circle.x-o.circle.radius)
+      dx = Math.abs o.circle.x - o.centerLine.start.x
 
-    angleSize1 = (90+dx)*deg; angleSize12 = angleSize1 + (1*deg)
-    angleSize2 = (90-dx)*deg; angleSize22 = angleSize2 + (1*deg)
+    angleSize1 = (90+(dx/4))*deg; angleSize12 = angleSize1 + (1*deg)
+    angleSize2 = (90-(dx/4))*deg; angleSize22 = angleSize2 + (1*deg)
 
     if o.side isnt 'bottom'
       if o.dir is 'left' then angle = -angleSize1; angle2 = -angleSize12
@@ -240,9 +240,9 @@ class Goo
         it.ctx.clear()
         it.circle2.draw()
         it.circle1.set
-          x: 200 - @p*90, y: it.circle1.y
+          x: 400 - @p*260, y: it.circle1.y
         it.gooCircles it.circle1, it.circle2
-      # .easing TWEEN.Easing.Elastic.Out
+      .easing TWEEN.Easing.Elastic.Out
       .yoyo(true)
       .repeat(999)
       .start()
