@@ -19,7 +19,9 @@ class Circle
     @ctx.arc(@x, @y, @radius, 0, 2*Math.PI, false)
 
     @ctx.fillStyle = @fill or '#222'
+    # @ctx.stokeStyle = '#f1f1f1'
     @ctx.fill()
+    # @ctx.stroke()
 
   set:(key, val)->
     if key isnt null and typeof key is 'object'
@@ -41,13 +43,14 @@ class Goo
     @ctx    = @canvas.getContext('2d')
     @width  = parseInt(@canvas.getAttribute('width'), 10)
     @height = parseInt(@canvas.getAttribute('height'), 10)
+    @isDebug = true
 
   createCircles:->
     @circle1 = new Circle
       ctx: @ctx
       x: 200
       y: 200
-      radius: 50
+      radius: 100
     @circle2 = new Circle
       ctx: @ctx
       x: 400
@@ -71,13 +74,18 @@ class Goo
 
     leftCircleRight = leftCircle.x + leftCircle.radius
     rightCircleLeft = rightCircle.x - rightCircle.radius
-    x = Math.abs (leftCircleRight-rightCircleLeft)/2
+    dx = Math.abs (leftCircleRight-rightCircleLeft)/2
     @ctx.beginPath()
 
+    if leftCircleRight < rightCircleLeft then x = leftCircleRight + dx
+    else x = leftCircleRight - dx
     centerLine =
-      start: x: leftCircleRight + x, y: bigCircle.y - bigCircle.radius
-      end:   x: leftCircleRight + x, y: bigCircle.y + bigCircle.radius
+      start: x: x, y: bigCircle.y - bigCircle.radius
+      end:   x: x, y: bigCircle.y + bigCircle.radius
 
+    # console.log dx
+
+    console.time 'curve calc'
     curvePoints1 = @circleMath
       centerLine: centerLine
       circle:     circle2
@@ -108,21 +116,18 @@ class Goo
     y3 = curvePoints2.circlePoint.y
     @ctx.bezierCurveTo(x1,y1,x2,y2,x3,y3)
 
-
-    @ctx.moveTo(curvePoints3.circlePoint.x,curvePoints3.circlePoint.y)
-    x1 = curvePoints3.handlePoint.x
-    y1 = curvePoints3.handlePoint.y
-    x2 = curvePoints4.handlePoint.x
-    y2 = curvePoints4.handlePoint.y
-    x3 = curvePoints4.circlePoint.x
-    y3 = curvePoints4.circlePoint.y
+    @ctx.lineTo(curvePoints4.circlePoint.x,curvePoints4.circlePoint.y)
+    x1 = curvePoints4.handlePoint.x
+    y1 = curvePoints4.handlePoint.y
+    x2 = curvePoints3.handlePoint.x
+    y2 = curvePoints3.handlePoint.y
+    x3 = curvePoints3.circlePoint.x
+    y3 = curvePoints3.circlePoint.y
     @ctx.bezierCurveTo(x1,y1,x2,y2,x3,y3)
 
 
-
-
-
-    @ctx.fillStyle = "rgba(34, 34, 34, 0.5)"
+    @ctx.closePath()
+    @ctx.fillStyle = if @isDebug then "rgba(34, 34, 34, 0.5)" else '#222'
     @ctx.fill()
 
   circleMath:(o)->
@@ -131,12 +136,20 @@ class Goo
     # y = centerY + sin(angle)*radius
     deg = Math.PI/180
 
-    if o.side isnt 'bottom'
-      if o.dir is 'left' then angle = -120*deg; angle2 = -125*deg
-      else angle = -65*deg; angle2 = -70*deg
+    if o.dir isnt 'left'
+      dx = Math.abs o.centerLine.start.x - (o.circle.x+o.circle.radius)
     else
-      if o.dir is 'left' then angle = 120*deg; angle2 = 125*deg
-      else angle = 65*deg; angle2 = 70*deg
+      dx = Math.abs o.centerLine.start.x - (o.circle.x-o.circle.radius)
+
+    angleSize1 = (90+dx)*deg; angleSize12 = angleSize1 + (1*deg)
+    angleSize2 = (90-dx)*deg; angleSize22 = angleSize2 + (1*deg)
+
+    if o.side isnt 'bottom'
+      if o.dir is 'left' then angle = -angleSize1; angle2 = -angleSize12
+      else angle = -angleSize2; angle2 = -angleSize22
+    else
+      if o.dir is 'left' then angle = angleSize1; angle2 = angleSize12
+      else angle = angleSize2; angle2 = angleSize22
 
     point1X = o.circle.x + (Math.cos(angle)*o.circle.radius)
     point1Y = o.circle.y + (Math.sin(angle)*o.circle.radius)
@@ -166,29 +179,30 @@ class Goo
 
 
     # visualize
-    @ctx.arc(point1X, point1Y, radius, 0, 2*Math.PI, false)
+    if @isDebug
+      @ctx.arc(point1X, point1Y, radius, 0, 2*Math.PI, false)
 
-    @ctx.moveTo pX, pY
-    @ctx.lineTo point1X, point1Y
+      @ctx.moveTo pX, pY
+      @ctx.lineTo point1X, point1Y
+      @ctx.stroke()
 
-    @ctx.stroke()
-    @ctx.beginPath()
-    @ctx.arc(intPoint.x, intPoint.y, 2, 0, 2*Math.PI, false)
-    @ctx.fillStyle = 'cyan'
-    @ctx.fill()
+      @ctx.beginPath()
+      @ctx.arc(intPoint.x, intPoint.y, 2, 0, 2*Math.PI, false)
+      @ctx.fillStyle = 'cyan'
+      @ctx.fill()
 
-    @ctx.beginPath()
+      @ctx.beginPath()
 
-    @ctx.arc(point1X, point1Y, 2, 0, 2*Math.PI, false)
-    @ctx.arc(point1X2, point1Y2, 2, 0, 2*Math.PI, false)
-    @ctx.fillStyle = 'deeppink'
-    @ctx.fill()
-    
-    @ctx.beginPath()
-    @ctx.moveTo o.centerLine.start.x, o.centerLine.start.y
-    @ctx.lineTo o.centerLine.end.x, o.centerLine.end.y
-    @ctx.strokeStyle = '#ccc'
-    @ctx.stroke()
+      @ctx.arc(point1X, point1Y, 2, 0, 2*Math.PI, false)
+      @ctx.arc(point1X2, point1Y2, 2, 0, 2*Math.PI, false)
+      @ctx.fillStyle = 'deeppink'
+      @ctx.fill()
+      
+      @ctx.beginPath()
+      @ctx.moveTo o.centerLine.start.x, o.centerLine.start.y
+      @ctx.lineTo o.centerLine.end.x, o.centerLine.end.y
+      @ctx.strokeStyle = '#ccc'
+      @ctx.stroke()
 
     {
       handlePoint: x: intPoint.x, y: intPoint.y
@@ -224,10 +238,11 @@ class Goo
     tween = new TWEEN.Tween({p:0}).to({p:1}, 5000)
       .onUpdate ->
         it.ctx.clear()
-        it.circle1.set
-          x: 100 + @p*150, y: it.circle1.y
         it.circle2.draw()
+        it.circle1.set
+          x: 200 - @p*90, y: it.circle1.y
         it.gooCircles it.circle1, it.circle2
+      # .easing TWEEN.Easing.Elastic.Out
       .yoyo(true)
       .repeat(999)
       .start()

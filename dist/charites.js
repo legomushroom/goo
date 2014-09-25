@@ -62,7 +62,8 @@ Goo = (function() {
     this.canvas = document.querySelector('#js-canvas');
     this.ctx = this.canvas.getContext('2d');
     this.width = parseInt(this.canvas.getAttribute('width'), 10);
-    return this.height = parseInt(this.canvas.getAttribute('height'), 10);
+    this.height = parseInt(this.canvas.getAttribute('height'), 10);
+    return this.isDebug = true;
   };
 
   Goo.prototype.createCircles = function() {
@@ -70,7 +71,7 @@ Goo = (function() {
       ctx: this.ctx,
       x: 200,
       y: 200,
-      radius: 50
+      radius: 100
     });
     return this.circle2 = new Circle({
       ctx: this.ctx,
@@ -81,7 +82,7 @@ Goo = (function() {
   };
 
   Goo.prototype.gooCircles = function(circle1, circle2) {
-    var bigCircle, centerLine, curvePoints1, curvePoints2, curvePoints3, curvePoints4, leftCircle, leftCircleRight, rightCircle, rightCircleLeft, smallCircle, x, x1, x2, x3, y1, y2, y3;
+    var bigCircle, centerLine, curvePoints1, curvePoints2, curvePoints3, curvePoints4, dx, leftCircle, leftCircleRight, rightCircle, rightCircleLeft, smallCircle, x, x1, x2, x3, y1, y2, y3;
     if (circle1.radius >= circle2.radius) {
       bigCircle = circle1;
       smallCircle = circle2;
@@ -98,18 +99,24 @@ Goo = (function() {
     }
     leftCircleRight = leftCircle.x + leftCircle.radius;
     rightCircleLeft = rightCircle.x - rightCircle.radius;
-    x = Math.abs((leftCircleRight - rightCircleLeft) / 2);
+    dx = Math.abs((leftCircleRight - rightCircleLeft) / 2);
     this.ctx.beginPath();
+    if (leftCircleRight < rightCircleLeft) {
+      x = leftCircleRight + dx;
+    } else {
+      x = leftCircleRight - dx;
+    }
     centerLine = {
       start: {
-        x: leftCircleRight + x,
+        x: x,
         y: bigCircle.y - bigCircle.radius
       },
       end: {
-        x: leftCircleRight + x,
+        x: x,
         y: bigCircle.y + bigCircle.radius
       }
     };
+    console.time('curve calc');
     curvePoints1 = this.circleMath({
       centerLine: centerLine,
       circle: circle2,
@@ -139,37 +146,47 @@ Goo = (function() {
     x3 = curvePoints2.circlePoint.x;
     y3 = curvePoints2.circlePoint.y;
     this.ctx.bezierCurveTo(x1, y1, x2, y2, x3, y3);
-    this.ctx.moveTo(curvePoints3.circlePoint.x, curvePoints3.circlePoint.y);
-    x1 = curvePoints3.handlePoint.x;
-    y1 = curvePoints3.handlePoint.y;
-    x2 = curvePoints4.handlePoint.x;
-    y2 = curvePoints4.handlePoint.y;
-    x3 = curvePoints4.circlePoint.x;
-    y3 = curvePoints4.circlePoint.y;
+    this.ctx.lineTo(curvePoints4.circlePoint.x, curvePoints4.circlePoint.y);
+    x1 = curvePoints4.handlePoint.x;
+    y1 = curvePoints4.handlePoint.y;
+    x2 = curvePoints3.handlePoint.x;
+    y2 = curvePoints3.handlePoint.y;
+    x3 = curvePoints3.circlePoint.x;
+    y3 = curvePoints3.circlePoint.y;
     this.ctx.bezierCurveTo(x1, y1, x2, y2, x3, y3);
-    this.ctx.fillStyle = "rgba(34, 34, 34, 0.5)";
+    this.ctx.closePath();
+    this.ctx.fillStyle = this.isDebug ? "rgba(34, 34, 34, 0.5)" : '#222';
     return this.ctx.fill();
   };
 
   Goo.prototype.circleMath = function(o) {
-    var angle, angle2, deg, dirAngle, intPoint, line1, pX, pY, point1X, point1X2, point1Y, point1Y2, radius, vector1, vector2, vectorAngle;
+    var angle, angle2, angleSize1, angleSize12, angleSize2, angleSize22, deg, dirAngle, dx, intPoint, line1, pX, pY, point1X, point1X2, point1Y, point1Y2, radius, vector1, vector2, vectorAngle;
     this.ctx.beginPath();
     deg = Math.PI / 180;
+    if (o.dir !== 'left') {
+      dx = Math.abs(o.centerLine.start.x - (o.circle.x + o.circle.radius));
+    } else {
+      dx = Math.abs(o.centerLine.start.x - (o.circle.x - o.circle.radius));
+    }
+    angleSize1 = (90 + dx) * deg;
+    angleSize12 = angleSize1 + (1 * deg);
+    angleSize2 = (90 - dx) * deg;
+    angleSize22 = angleSize2 + (1 * deg);
     if (o.side !== 'bottom') {
       if (o.dir === 'left') {
-        angle = -120 * deg;
-        angle2 = -125 * deg;
+        angle = -angleSize1;
+        angle2 = -angleSize12;
       } else {
-        angle = -65 * deg;
-        angle2 = -70 * deg;
+        angle = -angleSize2;
+        angle2 = -angleSize22;
       }
     } else {
       if (o.dir === 'left') {
-        angle = 120 * deg;
-        angle2 = 125 * deg;
+        angle = angleSize1;
+        angle2 = angleSize12;
       } else {
-        angle = 65 * deg;
-        angle2 = 70 * deg;
+        angle = angleSize2;
+        angle2 = angleSize22;
       }
     }
     point1X = o.circle.x + (Math.cos(angle) * o.circle.radius);
@@ -198,24 +215,26 @@ Goo = (function() {
       }
     };
     intPoint = this.intersection(line1, o.centerLine);
-    this.ctx.arc(point1X, point1Y, radius, 0, 2 * Math.PI, false);
-    this.ctx.moveTo(pX, pY);
-    this.ctx.lineTo(point1X, point1Y);
-    this.ctx.stroke();
-    this.ctx.beginPath();
-    this.ctx.arc(intPoint.x, intPoint.y, 2, 0, 2 * Math.PI, false);
-    this.ctx.fillStyle = 'cyan';
-    this.ctx.fill();
-    this.ctx.beginPath();
-    this.ctx.arc(point1X, point1Y, 2, 0, 2 * Math.PI, false);
-    this.ctx.arc(point1X2, point1Y2, 2, 0, 2 * Math.PI, false);
-    this.ctx.fillStyle = 'deeppink';
-    this.ctx.fill();
-    this.ctx.beginPath();
-    this.ctx.moveTo(o.centerLine.start.x, o.centerLine.start.y);
-    this.ctx.lineTo(o.centerLine.end.x, o.centerLine.end.y);
-    this.ctx.strokeStyle = '#ccc';
-    this.ctx.stroke();
+    if (this.isDebug) {
+      this.ctx.arc(point1X, point1Y, radius, 0, 2 * Math.PI, false);
+      this.ctx.moveTo(pX, pY);
+      this.ctx.lineTo(point1X, point1Y);
+      this.ctx.stroke();
+      this.ctx.beginPath();
+      this.ctx.arc(intPoint.x, intPoint.y, 2, 0, 2 * Math.PI, false);
+      this.ctx.fillStyle = 'cyan';
+      this.ctx.fill();
+      this.ctx.beginPath();
+      this.ctx.arc(point1X, point1Y, 2, 0, 2 * Math.PI, false);
+      this.ctx.arc(point1X2, point1Y2, 2, 0, 2 * Math.PI, false);
+      this.ctx.fillStyle = 'deeppink';
+      this.ctx.fill();
+      this.ctx.beginPath();
+      this.ctx.moveTo(o.centerLine.start.x, o.centerLine.start.y);
+      this.ctx.lineTo(o.centerLine.end.x, o.centerLine.end.y);
+      this.ctx.strokeStyle = '#ccc';
+      this.ctx.stroke();
+    }
     return {
       handlePoint: {
         x: intPoint.x,
@@ -263,11 +282,11 @@ Goo = (function() {
       p: 1
     }, 5000).onUpdate(function() {
       it.ctx.clear();
+      it.circle2.draw();
       it.circle1.set({
-        x: 100 + this.p * 150,
+        x: 200 - this.p * 90,
         y: it.circle1.y
       });
-      it.circle2.draw();
       return it.gooCircles(it.circle1, it.circle2);
     }).yoyo(true).repeat(999).start();
     return h.startAnimationLoop();
