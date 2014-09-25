@@ -73,58 +73,95 @@ class Goo
     rightCircleLeft = rightCircle.x - rightCircle.radius
     x = Math.abs (leftCircleRight-rightCircleLeft)/2
     @ctx.beginPath()
-    @ctx.moveTo leftCircleRight + x, bigCircle.y - bigCircle.radius
-    @ctx.lineTo leftCircleRight + x, bigCircle.y + bigCircle.radius
-    @ctx.strokeStyle = '#ccc'
-    @ctx.stroke()
 
+    centerLine =
+      start: x: leftCircleRight + x, y: bigCircle.y - bigCircle.radius
+      end:   x: leftCircleRight + x, y: bigCircle.y + bigCircle.radius
+
+    # @ctx.moveTo centerLine.start.x, centerLine.start.y
+    # @ctx.lineTo centerLine.end.x, centerLine.end.y
+    # @ctx.strokeStyle = '#ccc'
+    # @ctx.stroke()
+
+    curvePoints1 = @circleMath
+      centerLine: centerLine
+      circle:     circle2
+      dir: 'left'
+
+    curvePoints2 = @circleMath
+      centerLine: centerLine
+      circle:     circle1
+
+    @ctx.beginPath()
+    # last point
+    @ctx.moveTo(curvePoints1.circlePoint.x,curvePoints1.circlePoint.y)
+    # points: last handle; first handle; first point
+    x1 = curvePoints1.handlePoint.x
+    y1 = curvePoints1.handlePoint.y
+    x2 = curvePoints2.handlePoint.x
+    y2 = curvePoints2.handlePoint.y
+    x3 = curvePoints2.circlePoint.x
+    y3 = curvePoints2.circlePoint.y
+    @ctx.bezierCurveTo(x1,y1,x2,y2,x3,y3)
+    @ctx.lineTo(x3,y3+50)
+    @ctx.lineTo(x3+100,y3+50)
+    @ctx.fillStyle = '#333'
+    @ctx.fill()
+
+  circleMath:(o)->
     @ctx.beginPath()
     # x = centerX + cos(angle)*radius
     # y = centerY + sin(angle)*radius
     deg = Math.PI/180
-    angle = -120*deg; angle2 = -125*deg
-    point1X = circle2.x + (Math.cos(angle)*circle2.radius)
-    point1Y = circle2.y + (Math.sin(angle)*circle2.radius)
-    point1X2 = circle2.x + (Math.cos(angle2)*circle2.radius)
-    point1Y2 = circle2.y + (Math.sin(angle2)*circle2.radius)
+
+    if o.dir is 'left' then angle = -120*deg; angle2 = -125*deg
+    else angle = -65*deg; angle2 = -70*deg
+
+    point1X = o.circle.x + (Math.cos(angle)*o.circle.radius)
+    point1Y = o.circle.y + (Math.sin(angle)*o.circle.radius)
+    point1X2 = o.circle.x + (Math.cos(angle2)*o.circle.radius)
+    point1Y2 = o.circle.y + (Math.sin(angle2)*o.circle.radius)
 
     vector1 = point1Y - point1Y2
     vector2 = point1X - point1X2
-    vectorAngle = Math.atan(vector1/vector2) - 180*deg
 
-    radius = 200 # !hardcode!
-    @ctx.arc(point1X, point1Y, radius, 0, 2*Math.PI, false)
+    dirAngle = if o.dir is 'left' then 180*deg else 0
+    vectorAngle = Math.atan(vector1/vector2) + dirAngle
+
+    radius = 2000 # !hardcode!
+    # @ctx.arc(point1X, point1Y, radius, 0, 2*Math.PI, false)
 
     pX = point1X + (Math.cos(vectorAngle)*radius)
     pY = point1Y + (Math.sin(vectorAngle)*radius)
 
-    @ctx.moveTo pX, pY
-    @ctx.lineTo point1X, point1Y
+    # @ctx.moveTo pX, pY
+    # @ctx.lineTo point1X, point1Y
 
-    @ctx.stroke()
+    # @ctx.stroke()
 
     line1 =
       start: x: pX,      y: pY
       end:   x: point1X, y: point1Y
-    line2 =
-      start: x: leftCircleRight+x, y: bigCircle.y - bigCircle.radius
-      end:   x: leftCircleRight+x, y: bigCircle.y + bigCircle.radius
 
-    intPoint = @intersection line1, line2
-    console.log intPoint
+    intPoint = @intersection line1, o.centerLine
 
-    @ctx.beginPath()
-    @ctx.arc(intPoint.x, intPoint.y, 2, 0, 2*Math.PI, false)
-    @ctx.fillStyle = 'cyan'
-    @ctx.fill()
+    # @ctx.beginPath()
+    # @ctx.arc(intPoint.x, intPoint.y, 2, 0, 2*Math.PI, false)
+    # @ctx.fillStyle = 'cyan'
+    # @ctx.fill()
 
-    @ctx.beginPath()
+    # @ctx.beginPath()
 
-    @ctx.arc(point1X, point1Y, 4, 0, 2*Math.PI, false)
-    @ctx.arc(point1X2, point1Y2, 2, 0, 2*Math.PI, false)
+    # @ctx.arc(point1X, point1Y, 2, 0, 2*Math.PI, false)
+    # @ctx.arc(point1X2, point1Y2, 2, 0, 2*Math.PI, false)
 
-    @ctx.fillStyle = 'deeppink'
-    @ctx.fill()
+    # @ctx.fillStyle = 'deeppink'
+    # @ctx.fill()
+
+    {
+      handlePoint: x: intPoint.x, y: intPoint.y
+      circlePoint: x: point1X, y: point1Y
+    }
 
   intersection:(line1, line2)->
     result = {}
@@ -152,11 +189,11 @@ class Goo
 
   run:->
     it = @
-    tween = new TWEEN.Tween({p:0}).to({p:1}, 105000)
+    tween = new TWEEN.Tween({p:0}).to({p:1}, 5000)
       .onUpdate ->
         it.ctx.clear()
         it.circle1.set
-          x: 200 + @p*200, y: it.circle1.y
+          x: 100 + @p*75, y: it.circle1.y
         it.circle2.draw()
         it.gooCircles it.circle1, it.circle2
       .yoyo(true)

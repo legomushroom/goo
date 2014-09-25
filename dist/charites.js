@@ -81,7 +81,7 @@ Goo = (function() {
   };
 
   Goo.prototype.gooCircles = function(circle1, circle2) {
-    var angle, angle2, bigCircle, deg, intPoint, leftCircle, leftCircleRight, line1, line2, pX, pY, point1X, point1X2, point1Y, point1Y2, radius, rightCircle, rightCircleLeft, smallCircle, vector1, vector2, vectorAngle, x;
+    var bigCircle, centerLine, curvePoints1, curvePoints2, leftCircle, leftCircleRight, rightCircle, rightCircleLeft, smallCircle, x, x1, x2, x3, y1, y2, y3;
     if (circle1.radius >= circle2.radius) {
       bigCircle = circle1;
       smallCircle = circle2;
@@ -100,28 +100,62 @@ Goo = (function() {
     rightCircleLeft = rightCircle.x - rightCircle.radius;
     x = Math.abs((leftCircleRight - rightCircleLeft) / 2);
     this.ctx.beginPath();
-    this.ctx.moveTo(leftCircleRight + x, bigCircle.y - bigCircle.radius);
-    this.ctx.lineTo(leftCircleRight + x, bigCircle.y + bigCircle.radius);
-    this.ctx.strokeStyle = '#ccc';
-    this.ctx.stroke();
+    centerLine = {
+      start: {
+        x: leftCircleRight + x,
+        y: bigCircle.y - bigCircle.radius
+      },
+      end: {
+        x: leftCircleRight + x,
+        y: bigCircle.y + bigCircle.radius
+      }
+    };
+    curvePoints1 = this.circleMath({
+      centerLine: centerLine,
+      circle: circle2,
+      dir: 'left'
+    });
+    curvePoints2 = this.circleMath({
+      centerLine: centerLine,
+      circle: circle1
+    });
+    this.ctx.beginPath();
+    this.ctx.moveTo(curvePoints1.circlePoint.x, curvePoints1.circlePoint.y);
+    x1 = curvePoints1.handlePoint.x;
+    y1 = curvePoints1.handlePoint.y;
+    x2 = curvePoints2.handlePoint.x;
+    y2 = curvePoints2.handlePoint.y;
+    x3 = curvePoints2.circlePoint.x;
+    y3 = curvePoints2.circlePoint.y;
+    this.ctx.bezierCurveTo(x1, y1, x2, y2, x3, y3);
+    this.ctx.lineTo(x3, y3 + 50);
+    this.ctx.lineTo(x3 + 100, y3 + 50);
+    this.ctx.fillStyle = '#333';
+    return this.ctx.fill();
+  };
+
+  Goo.prototype.circleMath = function(o) {
+    var angle, angle2, deg, dirAngle, intPoint, line1, pX, pY, point1X, point1X2, point1Y, point1Y2, radius, vector1, vector2, vectorAngle;
     this.ctx.beginPath();
     deg = Math.PI / 180;
-    angle = -120 * deg;
-    angle2 = -125 * deg;
-    point1X = circle2.x + (Math.cos(angle) * circle2.radius);
-    point1Y = circle2.y + (Math.sin(angle) * circle2.radius);
-    point1X2 = circle2.x + (Math.cos(angle2) * circle2.radius);
-    point1Y2 = circle2.y + (Math.sin(angle2) * circle2.radius);
+    if (o.dir === 'left') {
+      angle = -120 * deg;
+      angle2 = -125 * deg;
+    } else {
+      angle = -65 * deg;
+      angle2 = -70 * deg;
+    }
+    point1X = o.circle.x + (Math.cos(angle) * o.circle.radius);
+    point1Y = o.circle.y + (Math.sin(angle) * o.circle.radius);
+    point1X2 = o.circle.x + (Math.cos(angle2) * o.circle.radius);
+    point1Y2 = o.circle.y + (Math.sin(angle2) * o.circle.radius);
     vector1 = point1Y - point1Y2;
     vector2 = point1X - point1X2;
-    vectorAngle = Math.atan(vector1 / vector2) - 180 * deg;
-    radius = 200;
-    this.ctx.arc(point1X, point1Y, radius, 0, 2 * Math.PI, false);
+    dirAngle = o.dir === 'left' ? 180 * deg : 0;
+    vectorAngle = Math.atan(vector1 / vector2) + dirAngle;
+    radius = 2000;
     pX = point1X + (Math.cos(vectorAngle) * radius);
     pY = point1Y + (Math.sin(vectorAngle) * radius);
-    this.ctx.moveTo(pX, pY);
-    this.ctx.lineTo(point1X, point1Y);
-    this.ctx.stroke();
     line1 = {
       start: {
         x: pX,
@@ -132,25 +166,17 @@ Goo = (function() {
         y: point1Y
       }
     };
-    line2 = {
-      start: {
-        x: leftCircleRight + x,
-        y: bigCircle.y - bigCircle.radius
+    intPoint = this.intersection(line1, o.centerLine);
+    return {
+      handlePoint: {
+        x: intPoint.x,
+        y: intPoint.y
       },
-      end: {
-        x: leftCircleRight + x,
-        y: bigCircle.y + bigCircle.radius
+      circlePoint: {
+        x: point1X,
+        y: point1Y
       }
     };
-    intPoint = this.intersection(line1, line2);
-    console.log(intPoint);
-    this.ctx.arc(intPoint.x, intPoint.y, 2, 0, 2 * Math.PI, false);
-    this.ctx.fill();
-    this.ctx.beginPath();
-    this.ctx.arc(point1X, point1Y, 4, 0, 2 * Math.PI, false);
-    this.ctx.arc(point1X2, point1Y2, 2, 0, 2 * Math.PI, false);
-    this.ctx.fillStyle = 'deeppink';
-    return this.ctx.fill();
   };
 
   Goo.prototype.intersection = function(line1, line2) {
@@ -186,10 +212,10 @@ Goo = (function() {
       p: 0
     }).to({
       p: 1
-    }, 105000).onUpdate(function() {
+    }, 5000).onUpdate(function() {
       it.ctx.clear();
       it.circle1.set({
-        x: 200 + this.p * 200,
+        x: 100 + this.p * 75,
         y: it.circle1.y
       });
       it.circle2.draw();
