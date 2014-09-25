@@ -78,11 +78,6 @@ class Goo
       start: x: leftCircleRight + x, y: bigCircle.y - bigCircle.radius
       end:   x: leftCircleRight + x, y: bigCircle.y + bigCircle.radius
 
-    # @ctx.moveTo centerLine.start.x, centerLine.start.y
-    # @ctx.lineTo centerLine.end.x, centerLine.end.y
-    # @ctx.strokeStyle = '#ccc'
-    # @ctx.stroke()
-
     curvePoints1 = @circleMath
       centerLine: centerLine
       circle:     circle2
@@ -92,10 +87,19 @@ class Goo
       centerLine: centerLine
       circle:     circle1
 
+    curvePoints3 = @circleMath
+      centerLine: centerLine
+      circle:     circle2
+      side:       'bottom'
+      dir:        'left'
+
+    curvePoints4 = @circleMath
+      centerLine: centerLine
+      circle:     circle1
+      side:       'bottom'
+
     @ctx.beginPath()
-    # last point
     @ctx.moveTo(curvePoints1.circlePoint.x,curvePoints1.circlePoint.y)
-    # points: last handle; first handle; first point
     x1 = curvePoints1.handlePoint.x
     y1 = curvePoints1.handlePoint.y
     x2 = curvePoints2.handlePoint.x
@@ -103,9 +107,22 @@ class Goo
     x3 = curvePoints2.circlePoint.x
     y3 = curvePoints2.circlePoint.y
     @ctx.bezierCurveTo(x1,y1,x2,y2,x3,y3)
-    @ctx.lineTo(x3,y3+50)
-    @ctx.lineTo(x3+100,y3+50)
-    @ctx.fillStyle = '#333'
+
+
+    @ctx.moveTo(curvePoints3.circlePoint.x,curvePoints3.circlePoint.y)
+    x1 = curvePoints3.handlePoint.x
+    y1 = curvePoints3.handlePoint.y
+    x2 = curvePoints4.handlePoint.x
+    y2 = curvePoints4.handlePoint.y
+    x3 = curvePoints4.circlePoint.x
+    y3 = curvePoints4.circlePoint.y
+    @ctx.bezierCurveTo(x1,y1,x2,y2,x3,y3)
+
+
+
+
+
+    @ctx.fillStyle = "rgba(34, 34, 34, 0.5)"
     @ctx.fill()
 
   circleMath:(o)->
@@ -114,8 +131,12 @@ class Goo
     # y = centerY + sin(angle)*radius
     deg = Math.PI/180
 
-    if o.dir is 'left' then angle = -120*deg; angle2 = -125*deg
-    else angle = -65*deg; angle2 = -70*deg
+    if o.side isnt 'bottom'
+      if o.dir is 'left' then angle = -120*deg; angle2 = -125*deg
+      else angle = -65*deg; angle2 = -70*deg
+    else
+      if o.dir is 'left' then angle = 120*deg; angle2 = 125*deg
+      else angle = 65*deg; angle2 = 70*deg
 
     point1X = o.circle.x + (Math.cos(angle)*o.circle.radius)
     point1Y = o.circle.y + (Math.sin(angle)*o.circle.radius)
@@ -125,19 +146,17 @@ class Goo
     vector1 = point1Y - point1Y2
     vector2 = point1X - point1X2
 
-    dirAngle = if o.dir is 'left' then 180*deg else 0
+    if o.side isnt 'bottom'
+      dirAngle = if o.dir is 'left' then 180*deg else 0
+    else
+      dirAngle = if o.dir is 'left' then 180*deg else 0
+
     vectorAngle = Math.atan(vector1/vector2) + dirAngle
 
     radius = 2000 # !hardcode!
-    # @ctx.arc(point1X, point1Y, radius, 0, 2*Math.PI, false)
 
     pX = point1X + (Math.cos(vectorAngle)*radius)
     pY = point1Y + (Math.sin(vectorAngle)*radius)
-
-    # @ctx.moveTo pX, pY
-    # @ctx.lineTo point1X, point1Y
-
-    # @ctx.stroke()
 
     line1 =
       start: x: pX,      y: pY
@@ -145,18 +164,31 @@ class Goo
 
     intPoint = @intersection line1, o.centerLine
 
-    # @ctx.beginPath()
-    # @ctx.arc(intPoint.x, intPoint.y, 2, 0, 2*Math.PI, false)
-    # @ctx.fillStyle = 'cyan'
-    # @ctx.fill()
 
-    # @ctx.beginPath()
+    # visualize
+    @ctx.arc(point1X, point1Y, radius, 0, 2*Math.PI, false)
 
-    # @ctx.arc(point1X, point1Y, 2, 0, 2*Math.PI, false)
-    # @ctx.arc(point1X2, point1Y2, 2, 0, 2*Math.PI, false)
+    @ctx.moveTo pX, pY
+    @ctx.lineTo point1X, point1Y
 
-    # @ctx.fillStyle = 'deeppink'
-    # @ctx.fill()
+    @ctx.stroke()
+    @ctx.beginPath()
+    @ctx.arc(intPoint.x, intPoint.y, 2, 0, 2*Math.PI, false)
+    @ctx.fillStyle = 'cyan'
+    @ctx.fill()
+
+    @ctx.beginPath()
+
+    @ctx.arc(point1X, point1Y, 2, 0, 2*Math.PI, false)
+    @ctx.arc(point1X2, point1Y2, 2, 0, 2*Math.PI, false)
+    @ctx.fillStyle = 'deeppink'
+    @ctx.fill()
+    
+    @ctx.beginPath()
+    @ctx.moveTo o.centerLine.start.x, o.centerLine.start.y
+    @ctx.lineTo o.centerLine.end.x, o.centerLine.end.y
+    @ctx.strokeStyle = '#ccc'
+    @ctx.stroke()
 
     {
       handlePoint: x: intPoint.x, y: intPoint.y
@@ -193,7 +225,7 @@ class Goo
       .onUpdate ->
         it.ctx.clear()
         it.circle1.set
-          x: 100 + @p*75, y: it.circle1.y
+          x: 100 + @p*150, y: it.circle1.y
         it.circle2.draw()
         it.gooCircles it.circle1, it.circle2
       .yoyo(true)
