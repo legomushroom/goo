@@ -3,22 +3,20 @@ h      = require './helpers'
 TWEEN  = require './vendor/tween'
 
 class Circle
-  constructor:(@o={})->
-    @vars()
-    @draw()
+  constructor:(@o={})-> @vars(); @draw()
+
   vars:->
     @ctx = @o.ctx
     if !@ctx then console.error('nay! I need a conext'); return
 
     @radius = @o.radius or 50
-    @x = @o.x or 0
-    @y = @o.y or 0
-    @fill = @o.fill
+    @x      = @o.x or 0
+    @y      = @o.y or 0
+    @fill   = @o.fill
 
   draw:->
     @ctx.beginPath()
     @ctx.arc(@x, @y, @radius, 0, 2*Math.PI, false)
-
     @ctx.fillStyle = @fill or '#222'
     @ctx.fill()
     # @ctx.stroke()
@@ -33,10 +31,7 @@ class Circle
 
 
 class Goo
-  constructor:(@o={})->
-    @vars()
-    @createCircles()
-    @run()
+  constructor:(@o={})-> @vars(); @createCircles(); @run()
 
   vars:->
     @canvas = document.querySelector '#js-canvas'
@@ -179,7 +174,6 @@ class Goo
       end:   x: point1X, y: point1Y
 
     intPoint = @intersection line1, o.centerLine
-
 
     # visualize
     if @isDebug
