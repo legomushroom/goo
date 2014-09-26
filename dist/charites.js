@@ -118,7 +118,6 @@ Goo = (function() {
         y: bigCircle.y + bigCircle.radius
       }
     };
-    console.time('curve calc');
     curvePoints1 = this.circleMath({
       centerLine: centerLine,
       circle: circle2,

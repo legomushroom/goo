@@ -20,7 +20,6 @@ class Circle
     @ctx.arc(@x, @y, @radius, 0, 2*Math.PI, false)
 
     @ctx.fillStyle = @fill or '#222'
-    # @ctx.stokeStyle = '#f1f1f1'
     @ctx.fill()
     # @ctx.stroke()
 
@@ -86,9 +85,6 @@ class Goo
       start: x: x, y: bigCircle.y - bigCircle.radius
       end:   x: x, y: bigCircle.y + bigCircle.radius
 
-    # console.log dx
-
-    console.time 'curve calc'
     curvePoints1 = @circleMath
       centerLine: centerLine
       circle:     circle2
@@ -141,8 +137,6 @@ class Goo
 
   circleMath:(o)->
     @ctx.beginPath()
-    # x = centerX + cos(angle)*radius
-    # y = centerY + sin(angle)*radius
     deg = Math.PI/180
 
     if o.dir is 'left'
@@ -240,7 +234,6 @@ class Goo
     result.onLine2 = true  if b > 0 and b < 1
     
     result
-
 
   run:->
     it = @
