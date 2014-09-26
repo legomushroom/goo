@@ -22,7 +22,8 @@ Circle = (function() {
     }
     this.radius = this.o.radius || 50;
     this.x = this.o.x || 0;
-    return this.y = this.o.y || 0;
+    this.y = this.o.y || 0;
+    return this.fill = this.o.fill;
   };
 
   Circle.prototype.draw = function() {
@@ -70,18 +71,20 @@ Goo = (function() {
       ctx: this.ctx,
       x: 200,
       y: 200,
-      radius: 100
+      radius: 100,
+      fill: '#DD2476'
     });
     return this.circle2 = new Circle({
       ctx: this.ctx,
       x: 400,
       y: 200,
-      radius: 100
+      radius: 100,
+      fill: '#12FFF7'
     });
   };
 
   Goo.prototype.gooCircles = function(circle1, circle2) {
-    var bigCircle, centerLine, curvePoints1, curvePoints2, curvePoints3, curvePoints4, dx, leftCircle, leftCircleRight, rightCircle, rightCircleLeft, smallCircle, x, x1, x2, x3, y1, y2, y3;
+    var bigCircle, centerLine, curvePoints1, curvePoints2, curvePoints3, curvePoints4, dx, grd, leftCircle, leftCircleRight, rightCircle, rightCircleLeft, smallCircle, x, x1, x2, x3, y1, y2, y3;
     if (circle1.radius >= circle2.radius) {
       bigCircle = circle1;
       smallCircle = circle2;
@@ -154,7 +157,12 @@ Goo = (function() {
     y3 = curvePoints3.circlePoint.y;
     this.ctx.bezierCurveTo(x1, y1, x2, y2, x3, y3);
     this.ctx.closePath();
-    this.ctx.fillStyle = this.isDebug ? "rgba(34, 34, 34, 0.5)" : '#222';
+    x1 = curvePoints1.circlePoint.x;
+    x2 = curvePoints4.circlePoint.x;
+    grd = this.ctx.createLinearGradient(x2, 0, x1, 0);
+    grd.addColorStop(0, '#DD2476');
+    grd.addColorStop(1, '#12FFF7');
+    this.ctx.fillStyle = grd;
     return this.ctx.fill();
   };
 
