@@ -46,13 +46,15 @@ class Goo
       x: 200
       y: 200
       radius: 100
-      fill: '#DD2476'
+      # fill: '#DD2476'
+      fill: '#222'
     @circle2 = new Circle
       ctx: @ctx
       x: 400
       y: 200
       radius: 100
-      fill: '#12FFF7'
+      fill: '#222'
+      # fill: '#12FFF7'
   
   gooCircles:(circle1, circle2)->
     if circle1.radius >= circle2.radius
@@ -123,11 +125,11 @@ class Goo
     @ctx.closePath()
     x1 = curvePoints1.circlePoint.x
     x2 = curvePoints4.circlePoint.x
-    grd = @ctx.createLinearGradient(x2,0,x1,0)
-    grd.addColorStop(0,'#DD2476')
-    grd.addColorStop(1,'#12FFF7')
-    # @ctx.fillStyle = if @isDebug then "rgba(34, 34, 34, 0.5)" else '#222'
-    @ctx.fillStyle = grd
+    # grd = @ctx.createLinearGradient(x2,0,x1,0)
+    # grd.addColorStop(0,'#DD2476')
+    # grd.addColorStop(1,'#12FFF7')
+    # @ctx.fillStyle = grd
+    @ctx.fillStyle = if @isDebug then "rgba(34, 34, 34, 0.5)" else '#222'
     @ctx.fill()
 
   circleMath:(o)->
