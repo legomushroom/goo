@@ -235,9 +235,9 @@ class Goo
 
   run:->
     it = @
-    start  = 600
-    offset = 460
-    tween = new TWEEN.Tween({p:0}).to({p:1}, 15000)
+    start  = 650
+    offset = 500
+    tween = new TWEEN.Tween({p:0}).to({p:1}, 50000)
       .onUpdate ->
         it.ctx.clear()
         it.circle2.draw()

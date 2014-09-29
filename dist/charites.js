@@ -282,13 +282,13 @@ Goo = (function() {
   Goo.prototype.run = function() {
     var it, offset, start, tween;
     it = this;
-    start = 600;
-    offset = 460;
+    start = 650;
+    offset = 500;
     tween = new TWEEN.Tween({
       p: 0
     }).to({
       p: 1
-    }, 15000).onUpdate(function() {
+    }, 50000).onUpdate(function() {
       it.ctx.clear();
       it.circle2.draw();
       it.circle1.set({
