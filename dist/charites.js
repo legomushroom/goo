@@ -63,8 +63,7 @@ Goo = (function() {
     this.canvas = document.querySelector('#js-canvas');
     this.ctx = this.canvas.getContext('2d');
     this.width = parseInt(this.canvas.getAttribute('width'), 10);
-    this.height = parseInt(this.canvas.getAttribute('height'), 10);
-    return this.isDebug = true;
+    return this.height = parseInt(this.canvas.getAttribute('height'), 10);
   };
 
   Goo.prototype.createCircles = function() {
@@ -72,7 +71,7 @@ Goo = (function() {
       ctx: this.ctx,
       x: 200,
       y: 200,
-      radius: 100,
+      radius: 50,
       fill: '#222'
     });
     return this.circle2 = new Circle({
@@ -141,6 +140,9 @@ Goo = (function() {
       side: 'bottom',
       dir: circle1 !== leftCircle ? 'left' : void 0
     });
+    if (curvePoints3.handlePoint.y < curvePoints1.handlePoint.y) {
+      return;
+    }
     this.ctx.beginPath();
     this.ctx.moveTo(curvePoints1.circlePoint.x, curvePoints1.circlePoint.y);
     x1 = curvePoints1.handlePoint.x;
@@ -282,13 +284,13 @@ Goo = (function() {
   Goo.prototype.run = function() {
     var it, offset, start, tween;
     it = this;
-    start = 650;
-    offset = 500;
+    start = 850;
+    offset = 800;
     tween = new TWEEN.Tween({
       p: 0
     }).to({
       p: 1
-    }, 50000).onUpdate(function() {
+    }, 5000).onUpdate(function() {
       it.ctx.clear();
       it.circle2.draw();
       it.circle1.set({

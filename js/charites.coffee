@@ -38,14 +38,14 @@ class Goo
     @ctx    = @canvas.getContext('2d')
     @width  = parseInt(@canvas.getAttribute('width'), 10)
     @height = parseInt(@canvas.getAttribute('height'), 10)
-    @isDebug = true
+    # @isDebug = true
 
   createCircles:->
     @circle1 = new Circle
       ctx: @ctx
       x: 200
       y: 200
-      radius: 100
+      radius: 50
       # fill: '#DD2476'
       fill: '#222'
     @circle2 = new Circle
@@ -103,6 +103,9 @@ class Goo
       circle:     circle1
       side:       'bottom'
       dir:        if circle1 isnt leftCircle then 'left'
+
+    if curvePoints3.handlePoint.y < curvePoints1.handlePoint.y
+      return
 
     @ctx.beginPath()
     @ctx.moveTo(curvePoints1.circlePoint.x,curvePoints1.circlePoint.y)
@@ -235,9 +238,9 @@ class Goo
 
   run:->
     it = @
-    start  = 650
-    offset = 500
-    tween = new TWEEN.Tween({p:0}).to({p:1}, 50000)
+    start  = 850
+    offset = 800
+    tween = new TWEEN.Tween({p:0}).to({p:1}, 5000)
       .onUpdate ->
         it.ctx.clear()
         it.circle2.draw()
