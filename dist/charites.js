@@ -63,7 +63,8 @@ Goo = (function() {
     this.canvas = document.querySelector('#js-canvas');
     this.ctx = this.canvas.getContext('2d');
     this.width = parseInt(this.canvas.getAttribute('width'), 10);
-    return this.height = parseInt(this.canvas.getAttribute('height'), 10);
+    this.height = parseInt(this.canvas.getAttribute('height'), 10);
+    return this.isDebug = true;
   };
 
   Goo.prototype.createCircles = function() {
@@ -121,22 +122,24 @@ Goo = (function() {
     curvePoints1 = this.circleMath({
       centerLine: centerLine,
       circle: circle2,
-      dir: 'left'
+      dir: circle2 !== leftCircle ? 'left' : void 0
     });
     curvePoints2 = this.circleMath({
       centerLine: centerLine,
-      circle: circle1
+      circle: circle1,
+      dir: circle1 !== leftCircle ? 'left' : void 0
     });
     curvePoints3 = this.circleMath({
       centerLine: centerLine,
       circle: circle2,
       side: 'bottom',
-      dir: 'left'
+      dir: circle2 !== leftCircle ? 'left' : void 0
     });
     curvePoints4 = this.circleMath({
       centerLine: centerLine,
       circle: circle1,
-      side: 'bottom'
+      side: 'bottom',
+      dir: circle1 !== leftCircle ? 'left' : void 0
     });
     this.ctx.beginPath();
     this.ctx.moveTo(curvePoints1.circlePoint.x, curvePoints1.circlePoint.y);
@@ -277,21 +280,23 @@ Goo = (function() {
   };
 
   Goo.prototype.run = function() {
-    var it, tween;
+    var it, offset, start, tween;
     it = this;
+    start = 600;
+    offset = 460;
     tween = new TWEEN.Tween({
       p: 0
     }).to({
       p: 1
-    }, 5000).onUpdate(function() {
+    }, 15000).onUpdate(function() {
       it.ctx.clear();
       it.circle2.draw();
       it.circle1.set({
-        x: 400 - this.p * 260,
+        x: start - this.p * offset,
         y: it.circle1.y
       });
       return it.gooCircles(it.circle1, it.circle2);
-    }).easing(TWEEN.Easing.Elastic.Out).yoyo(true).repeat(999).start();
+    }).yoyo(true).repeat(999).start();
     return h.startAnimationLoop();
   };
 

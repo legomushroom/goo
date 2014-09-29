@@ -38,7 +38,7 @@ class Goo
     @ctx    = @canvas.getContext('2d')
     @width  = parseInt(@canvas.getAttribute('width'), 10)
     @height = parseInt(@canvas.getAttribute('height'), 10)
-    # @isDebug = true
+    @isDebug = true
 
   createCircles:->
     @circle1 = new Circle
@@ -85,22 +85,24 @@ class Goo
     curvePoints1 = @circleMath
       centerLine: centerLine
       circle:     circle2
-      dir: 'left'
+      dir:        if circle2 isnt leftCircle then 'left'
 
     curvePoints2 = @circleMath
       centerLine: centerLine
       circle:     circle1
+      dir:        if circle1 isnt leftCircle then 'left'
 
     curvePoints3 = @circleMath
       centerLine: centerLine
       circle:     circle2
       side:       'bottom'
-      dir:        'left'
+      dir:        if circle2 isnt leftCircle then 'left'
 
     curvePoints4 = @circleMath
       centerLine: centerLine
       circle:     circle1
       side:       'bottom'
+      dir:        if circle1 isnt leftCircle then 'left'
 
     @ctx.beginPath()
     @ctx.moveTo(curvePoints1.circlePoint.x,curvePoints1.circlePoint.y)
@@ -233,14 +235,16 @@ class Goo
 
   run:->
     it = @
-    tween = new TWEEN.Tween({p:0}).to({p:1}, 5000)
+    start  = 600
+    offset = 460
+    tween = new TWEEN.Tween({p:0}).to({p:1}, 15000)
       .onUpdate ->
         it.ctx.clear()
         it.circle2.draw()
         it.circle1.set
-          x: 400 - @p*260, y: it.circle1.y
+          x: start - @p*offset, y: it.circle1.y
         it.gooCircles it.circle1, it.circle2
-      .easing TWEEN.Easing.Elastic.Out
+      # .easing TWEEN.Easing.Elastic.Out
       .yoyo(true)
       .repeat(999)
       .start()
