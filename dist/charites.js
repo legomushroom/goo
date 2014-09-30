@@ -70,8 +70,8 @@ Goo = (function() {
   Goo.prototype.createCircles = function() {
     this.circle1 = new Circle({
       ctx: this.ctx,
-      x: 200,
-      y: 300,
+      x: 450,
+      y: 600,
       radius: 100,
       fill: '#222'
     });
@@ -85,7 +85,7 @@ Goo = (function() {
   };
 
   Goo.prototype.gooCircles = function(circle1, circle2) {
-    var bigCircle, centerLine, curvePoints1, curvePoints2, curvePoints3, curvePoints4, dx, leftCircle, leftCircleRight, rightCircle, rightCircleLeft, smallCircle, x, x1, x2, x3, y1, y2, y3;
+    var bigCircle, centerLine, circlesAngle, circlesDX, circlesDY, curvePoints1, curvePoints2, curvePoints3, curvePoints4, dx, leftCircle, leftCircleRight, rightCircle, rightCircleLeft, smallCircle, x, x1, x2, x3, y1, y2, y3;
     if (circle1.radius >= circle2.radius) {
       bigCircle = circle1;
       smallCircle = circle2;
@@ -119,27 +119,35 @@ Goo = (function() {
         y: bigCircle.y + bigCircle.radius
       }
     };
+    circlesDX = Math.abs(circle1.x - circle2.x);
+    circlesDY = Math.abs(circle1.y - circle2.y);
+    circlesAngle = Math.atan(circlesDX / circlesDY);
+    circlesAngle = (circlesAngle * 180) / Math.PI;
     curvePoints1 = this.circleMath({
       centerLine: centerLine,
       circle: circle2,
-      dir: circle2 !== leftCircle ? 'left' : void 0
+      dir: circle2 !== leftCircle ? 'left' : void 0,
+      angle: circlesAngle
     });
     curvePoints2 = this.circleMath({
       centerLine: centerLine,
       circle: circle1,
-      dir: circle1 !== leftCircle ? 'left' : void 0
+      dir: circle1 !== leftCircle ? 'left' : void 0,
+      angle: circlesAngle
     });
     curvePoints3 = this.circleMath({
       centerLine: centerLine,
       circle: circle2,
       side: 'bottom',
-      dir: circle2 !== leftCircle ? 'left' : void 0
+      dir: circle2 !== leftCircle ? 'left' : void 0,
+      angle: circlesAngle
     });
     curvePoints4 = this.circleMath({
       centerLine: centerLine,
       circle: circle1,
       side: 'bottom',
-      dir: circle1 !== leftCircle ? 'left' : void 0
+      dir: circle1 !== leftCircle ? 'left' : void 0,
+      angle: circlesAngle
     });
     if (curvePoints3.handlePoint.y < curvePoints1.handlePoint.y) {
       return;
@@ -177,9 +185,9 @@ Goo = (function() {
     } else {
       dx = Math.abs(o.circle.x - o.centerLine.start.x);
     }
-    angleSize1 = (90 + (dx / 4)) * deg;
+    angleSize1 = (90 + (dx / 4) - o.angle) * deg;
     angleSize12 = angleSize1 + (1 * deg);
-    angleSize2 = (90 - (dx / 4)) * deg;
+    angleSize2 = (90 - (dx / 4) + o.angle) * deg;
     angleSize22 = angleSize2 + (1 * deg);
     if (o.side !== 'bottom') {
       if (o.dir === 'left') {
@@ -295,8 +303,8 @@ Goo = (function() {
       it.ctx.clear();
       it.circle2.draw();
       it.circle1.set({
-        x: start - this.p * offset,
-        y: it.circle1.y
+        x: it.circle1.x,
+        y: start - this.p * offset
       });
       return it.gooCircles(it.circle1, it.circle2);
     }).yoyo(true).repeat(999).start();

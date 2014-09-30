@@ -7,6 +7,7 @@ TWEEN  = require './vendor/tween'
 #   add connection length property
 #   make it work with different circle sizes
 #   make circle work with different y
+#     find an angle
 #   change circle sizes on connection
 #   GC fix
 
@@ -51,8 +52,8 @@ class Goo
   createCircles:->
     @circle1 = new Circle
       ctx: @ctx
-      x: 200
-      y: 300
+      x: 450
+      y: 600
       radius: 100
       # fill: '#DD2476'
       fill: '#222'
@@ -98,27 +99,36 @@ class Goo
       start: x: x, y: bigCircle.y - bigCircle.radius
       end:   x: x, y: bigCircle.y + bigCircle.radius
 
+    circlesDX = Math.abs circle1.x - circle2.x
+    circlesDY = Math.abs circle1.y - circle2.y
+    circlesAngle = Math.atan(circlesDX/circlesDY)
+    circlesAngle = (circlesAngle*180)/Math.PI
+
     curvePoints1 = @circleMath
       centerLine: centerLine
       circle:     circle2
       dir:        if circle2 isnt leftCircle then 'left'
+      angle: circlesAngle
 
     curvePoints2 = @circleMath
       centerLine: centerLine
       circle:     circle1
       dir:        if circle1 isnt leftCircle then 'left'
+      angle: circlesAngle
 
     curvePoints3 = @circleMath
       centerLine: centerLine
       circle:     circle2
       side:       'bottom'
       dir:        if circle2 isnt leftCircle then 'left'
+      angle: circlesAngle
 
     curvePoints4 = @circleMath
       centerLine: centerLine
       circle:     circle1
       side:       'bottom'
       dir:        if circle1 isnt leftCircle then 'left'
+      angle: circlesAngle
 
     return if curvePoints3.handlePoint.y < curvePoints1.handlePoint.y
       
@@ -162,8 +172,8 @@ class Goo
     else
       dx = Math.abs o.circle.x - o.centerLine.start.x
 
-    angleSize1 = (90+(dx/4))*deg; angleSize12 = angleSize1 + (1*deg)
-    angleSize2 = (90-(dx/4))*deg; angleSize22 = angleSize2 + (1*deg)
+    angleSize1 = (90+(dx/4)-o.angle)*deg; angleSize12 = angleSize1 + (1*deg)
+    angleSize2 = (90-(dx/4)+o.angle)*deg; angleSize22 = angleSize2 + (1*deg)
 
     if o.side isnt 'bottom'
       if o.dir is 'left' then angle = -angleSize1; angle2 = -angleSize12
@@ -261,7 +271,7 @@ class Goo
         it.ctx.clear()
         it.circle2.draw()
         it.circle1.set
-          x: start - @p*offset, y: it.circle1.y
+          x: it.circle1.x, y: start - @p*offset
 
         # it.circle3.set
         #   x: start - 200 - @p*offset, y: it.circle1.y
