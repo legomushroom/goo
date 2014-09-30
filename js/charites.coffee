@@ -4,7 +4,7 @@ TWEEN  = require './vendor/tween'
 
 
 # TODO:
-#   add connection lemgth property
+#   add connection length property
 #   make it work with different circle sizes
 #   make circle work with different y
 #   change circle sizes on connection
@@ -46,13 +46,13 @@ class Goo
     @ctx    = @canvas.getContext('2d')
     @width  = parseInt(@canvas.getAttribute('width'), 10)
     @height = parseInt(@canvas.getAttribute('height'), 10)
-    # @isDebug = true
+    @isDebug = true
 
   createCircles:->
     @circle1 = new Circle
       ctx: @ctx
       x: 200
-      y: 200
+      y: 300
       radius: 100
       # fill: '#DD2476'
       fill: '#222'
@@ -64,13 +64,13 @@ class Goo
       fill: '#222'
       # fill: '#12FFF7'
 
-    @circle3 = new Circle
-      ctx: @ctx
-      x: 400
-      y: 200
-      radius: 75
-      fill: '#222'
-      # fill: '#12FFF7'
+    # @circle3 = new Circle
+    #   ctx: @ctx
+    #   x: 400
+    #   y: 200
+    #   radius: 75
+    #   fill: '#222'
+    #   # fill: '#12FFF7'
   
   gooCircles:(circle1, circle2)->
     if circle1.radius >= circle2.radius
@@ -263,11 +263,11 @@ class Goo
         it.circle1.set
           x: start - @p*offset, y: it.circle1.y
 
-        it.circle3.set
-          x: start - 200 - @p*offset, y: it.circle1.y
+        # it.circle3.set
+        #   x: start - 200 - @p*offset, y: it.circle1.y
 
         it.gooCircles it.circle1, it.circle2
-        it.gooCircles it.circle2, it.circle3
+        # it.gooCircles it.circle2, it.circle3
       # .easing TWEEN.Easing.Elastic.Out
       .yoyo(true)
       .repeat(999)

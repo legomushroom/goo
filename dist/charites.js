@@ -63,29 +63,23 @@ Goo = (function() {
     this.canvas = document.querySelector('#js-canvas');
     this.ctx = this.canvas.getContext('2d');
     this.width = parseInt(this.canvas.getAttribute('width'), 10);
-    return this.height = parseInt(this.canvas.getAttribute('height'), 10);
+    this.height = parseInt(this.canvas.getAttribute('height'), 10);
+    return this.isDebug = true;
   };
 
   Goo.prototype.createCircles = function() {
     this.circle1 = new Circle({
       ctx: this.ctx,
       x: 200,
-      y: 200,
+      y: 300,
       radius: 100,
       fill: '#222'
     });
-    this.circle2 = new Circle({
+    return this.circle2 = new Circle({
       ctx: this.ctx,
       x: 400,
       y: 200,
       radius: 100,
-      fill: '#222'
-    });
-    return this.circle3 = new Circle({
-      ctx: this.ctx,
-      x: 400,
-      y: 200,
-      radius: 75,
       fill: '#222'
     });
   };
@@ -304,12 +298,7 @@ Goo = (function() {
         x: start - this.p * offset,
         y: it.circle1.y
       });
-      it.circle3.set({
-        x: start - 200 - this.p * offset,
-        y: it.circle1.y
-      });
-      it.gooCircles(it.circle1, it.circle2);
-      return it.gooCircles(it.circle2, it.circle3);
+      return it.gooCircles(it.circle1, it.circle2);
     }).yoyo(true).repeat(999).start();
     return h.startAnimationLoop();
   };
