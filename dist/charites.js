@@ -71,14 +71,21 @@ Goo = (function() {
       ctx: this.ctx,
       x: 200,
       y: 200,
-      radius: 50,
+      radius: 100,
       fill: '#222'
     });
-    return this.circle2 = new Circle({
+    this.circle2 = new Circle({
       ctx: this.ctx,
       x: 400,
       y: 200,
       radius: 100,
+      fill: '#222'
+    });
+    return this.circle3 = new Circle({
+      ctx: this.ctx,
+      x: 400,
+      y: 200,
+      radius: 75,
       fill: '#222'
     });
   };
@@ -290,14 +297,19 @@ Goo = (function() {
       p: 0
     }).to({
       p: 1
-    }, 5000).onUpdate(function() {
+    }, 2000).onUpdate(function() {
       it.ctx.clear();
       it.circle2.draw();
       it.circle1.set({
         x: start - this.p * offset,
         y: it.circle1.y
       });
-      return it.gooCircles(it.circle1, it.circle2);
+      it.circle3.set({
+        x: start - 200 - this.p * offset,
+        y: it.circle1.y
+      });
+      it.gooCircles(it.circle1, it.circle2);
+      return it.gooCircles(it.circle2, it.circle3);
     }).yoyo(true).repeat(999).start();
     return h.startAnimationLoop();
   };

@@ -2,6 +2,14 @@ require './polyfills'
 h      = require './helpers'
 TWEEN  = require './vendor/tween'
 
+
+# TODO:
+#   add connection lemgth property
+#   make it work with different circle sizes
+#   make circle work with different y
+#   change circle sizes on connection
+#   GC fix
+
 class Circle
   constructor:(@o={})-> @vars(); @draw()
 
@@ -45,7 +53,7 @@ class Goo
       ctx: @ctx
       x: 200
       y: 200
-      radius: 50
+      radius: 100
       # fill: '#DD2476'
       fill: '#222'
     @circle2 = new Circle
@@ -53,6 +61,14 @@ class Goo
       x: 400
       y: 200
       radius: 100
+      fill: '#222'
+      # fill: '#12FFF7'
+
+    @circle3 = new Circle
+      ctx: @ctx
+      x: 400
+      y: 200
+      radius: 75
       fill: '#222'
       # fill: '#12FFF7'
   
@@ -104,8 +120,8 @@ class Goo
       side:       'bottom'
       dir:        if circle1 isnt leftCircle then 'left'
 
-    if curvePoints3.handlePoint.y < curvePoints1.handlePoint.y
-      return
+    return if curvePoints3.handlePoint.y < curvePoints1.handlePoint.y
+      
 
     @ctx.beginPath()
     @ctx.moveTo(curvePoints1.circlePoint.x,curvePoints1.circlePoint.y)
@@ -240,13 +256,18 @@ class Goo
     it = @
     start  = 850
     offset = 800
-    tween = new TWEEN.Tween({p:0}).to({p:1}, 5000)
+    tween = new TWEEN.Tween({p:0}).to({p:1}, 2000)
       .onUpdate ->
         it.ctx.clear()
         it.circle2.draw()
         it.circle1.set
           x: start - @p*offset, y: it.circle1.y
+
+        it.circle3.set
+          x: start - 200 - @p*offset, y: it.circle1.y
+
         it.gooCircles it.circle1, it.circle2
+        it.gooCircles it.circle2, it.circle3
       # .easing TWEEN.Easing.Elastic.Out
       .yoyo(true)
       .repeat(999)
