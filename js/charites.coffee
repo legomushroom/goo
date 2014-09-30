@@ -52,14 +52,14 @@ class Goo
   createCircles:->
     @circle1 = new Circle
       ctx: @ctx
-      x: 450
+      x: 400
       y: 600
       radius: 100
       # fill: '#DD2476'
       fill: '#222'
     @circle2 = new Circle
       ctx: @ctx
-      x: 400
+      x: 450
       y: 200
       radius: 100
       fill: '#222'
@@ -101,7 +101,7 @@ class Goo
 
     circlesDX = Math.abs circle1.x - circle2.x
     circlesDY = Math.abs circle1.y - circle2.y
-    circlesAngle = Math.atan(circlesDX/circlesDY)
+    circlesAngle = Math.atan(circlesDY/circlesDX)
     circlesAngle = (circlesAngle*180)/Math.PI
 
     curvePoints1 = @circleMath
@@ -172,8 +172,12 @@ class Goo
     else
       dx = Math.abs o.circle.x - o.centerLine.start.x
 
-    angleSize1 = (90+(dx/4)-o.angle)*deg; angleSize12 = angleSize1 + (1*deg)
-    angleSize2 = (90-(dx/4)+o.angle)*deg; angleSize22 = angleSize2 + (1*deg)
+    console.log o.angle
+    # used for shifting points on circles
+    angleShift = if o.side is 'bottom' then o.angle
+    else -o.angle
+    angleSize1 = (90+angleShift+(dx/4))*deg; angleSize12 = angleSize1 + (1*deg)
+    angleSize2 = (90+angleShift-(dx/4))*deg; angleSize22 = angleSize2 + (1*deg)
 
     if o.side isnt 'bottom'
       if o.dir is 'left' then angle = -angleSize1; angle2 = -angleSize12

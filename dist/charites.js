@@ -70,14 +70,14 @@ Goo = (function() {
   Goo.prototype.createCircles = function() {
     this.circle1 = new Circle({
       ctx: this.ctx,
-      x: 450,
+      x: 400,
       y: 600,
       radius: 100,
       fill: '#222'
     });
     return this.circle2 = new Circle({
       ctx: this.ctx,
-      x: 400,
+      x: 450,
       y: 200,
       radius: 100,
       fill: '#222'
@@ -121,7 +121,7 @@ Goo = (function() {
     };
     circlesDX = Math.abs(circle1.x - circle2.x);
     circlesDY = Math.abs(circle1.y - circle2.y);
-    circlesAngle = Math.atan(circlesDX / circlesDY);
+    circlesAngle = Math.atan(circlesDY / circlesDX);
     circlesAngle = (circlesAngle * 180) / Math.PI;
     curvePoints1 = this.circleMath({
       centerLine: centerLine,
@@ -177,7 +177,7 @@ Goo = (function() {
   };
 
   Goo.prototype.circleMath = function(o) {
-    var angle, angle2, angleSize1, angleSize12, angleSize2, angleSize22, deg, dirAngle, dx, intPoint, line1, pX, pY, point1X, point1X2, point1Y, point1Y2, radius, vector1, vector2, vectorAngle;
+    var angle, angle2, angleShift, angleSize1, angleSize12, angleSize2, angleSize22, deg, dirAngle, dx, intPoint, line1, pX, pY, point1X, point1X2, point1Y, point1Y2, radius, vector1, vector2, vectorAngle;
     this.ctx.beginPath();
     deg = Math.PI / 180;
     if (o.dir === 'left') {
@@ -185,9 +185,11 @@ Goo = (function() {
     } else {
       dx = Math.abs(o.circle.x - o.centerLine.start.x);
     }
-    angleSize1 = (90 + (dx / 4) - o.angle) * deg;
+    console.log(o.angle);
+    angleShift = o.side === 'bottom' ? o.angle : -o.angle;
+    angleSize1 = (90 + angleShift + (dx / 4)) * deg;
     angleSize12 = angleSize1 + (1 * deg);
-    angleSize2 = (90 - (dx / 4) + o.angle) * deg;
+    angleSize2 = (90 + angleShift - (dx / 4)) * deg;
     angleSize22 = angleSize2 + (1 * deg);
     if (o.side !== 'bottom') {
       if (o.dir === 'left') {
