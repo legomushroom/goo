@@ -73,7 +73,7 @@ Goo = (function() {
       ctx: this.ctx,
       x: 400,
       y: 400,
-      radius: 100
+      radius: 75
     });
     return this.circle2 = new Circle({
       ctx: this.ctx,
@@ -84,7 +84,7 @@ Goo = (function() {
   };
 
   Goo.prototype.gooCircles = function(circle1, circle2) {
-    var bigCircle, bottomCircle, leftCircle, middlePoint, rightCircle, smallCircle, topCircle;
+    var angle, angleShift1, angleShift2, bigCircle, bottomCircle, leftCircle, point1, point2, rightCircle, smallCircle, topCircle, x, y;
     if (circle1.radius >= circle2.radius) {
       bigCircle = circle1;
       smallCircle = circle2;
@@ -106,13 +106,23 @@ Goo = (function() {
       bottomCircle = circle1;
       topCircle = circle2;
     }
-    middlePoint = {
-      x: (circle1.x + circle2.x) / 2,
-      y: (circle1.y + circle2.y) / 2
+    x = circle1.x - circle2.x;
+    y = circle1.y - circle2.y;
+    angle = Math.atan(y / x);
+    angleShift1 = x > 0 ? 180 * this.deg : 0;
+    angleShift2 = x > 0 ? 0 : 180 * this.deg;
+    point1 = {
+      x: circle1.x + Math.cos(angle + angleShift1) * circle1.radius,
+      y: circle1.y + Math.sin(angle + angleShift1) * circle1.radius
+    };
+    point2 = {
+      x: circle2.x + Math.cos(angle + angleShift2) * circle2.radius,
+      y: circle2.y + Math.sin(angle + angleShift2) * circle2.radius
     };
     if (this.isDebug) {
       this.ctx.beginPath();
-      this.ctx.arc(middlePoint.x, middlePoint.y, 2, 0, 2 * Math.PI, false);
+      this.ctx.arc(point1.x, point1.y, 2, 0, 2 * Math.PI, false);
+      this.ctx.arc(point2.x, point2.y, 2, 0, 2 * Math.PI, false);
       this.ctx.fillStyle = 'deeppink';
       return this.ctx.fill();
     }
@@ -241,7 +251,7 @@ Goo = (function() {
       p: 0
     }).to({
       p: 1
-    }, 20000).onUpdate(function() {
+    }, 200000).onUpdate(function() {
       var x, y;
       it.ctx.clear();
       it.circle2.draw();

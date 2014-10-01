@@ -55,7 +55,7 @@ class Goo
       ctx: @ctx
       x: 400
       y: 400
-      radius: 100
+      radius: 75
       # fill: '#DD2476'
     @circle2 = new Circle
       ctx: @ctx
@@ -94,10 +94,47 @@ class Goo
       bottomCircle  = circle1
       topCircle = circle2
 
+    x = circle1.x - circle2.x
+    y = circle1.y - circle2.y
+    angle = Math.atan y/x
+    angleShift1 = if x > 0 then 180*@deg else 0
+    angleShift2 = if x > 0 then 0 else 180*@deg
 
-    middlePoint =
-      x: (circle1.x + circle2.x)/2
-      y: (circle1.y + circle2.y)/2
+    point1 =
+      x: circle1.x + Math.cos(angle+angleShift1)*circle1.radius
+      y: circle1.y + Math.sin(angle+angleShift1)*circle1.radius
+
+    point2 =
+      x: circle2.x + Math.cos(angle+angleShift2)*circle2.radius
+      y: circle2.y + Math.sin(angle+angleShift2)*circle2.radius
+
+    if @isDebug
+      @ctx.beginPath()
+      @ctx.arc(point1.x, point1.y, 2, 0, 2*Math.PI, false)
+      @ctx.arc(point2.x, point2.y, 2, 0, 2*Math.PI, false)
+      @ctx.fillStyle = 'deeppink'
+      @ctx.fill()
+
+
+
+    # x = circle1.x - circle2.x
+    # y = circle1.y - circle2.y
+    # angle = Math.atan y/x
+
+    # point2 =
+    #   x: circle2.x + Math.cos(angle)*circle2.radius
+    #   y: circle2.y + Math.sin(angle)*circle2.radius
+
+    # if @isDebug
+    #   @ctx.beginPath()
+    #   @ctx.arc(point2.x, point2.y, 2, 0, 2*Math.PI, false)
+    #   @ctx.fillStyle = 'deeppink'
+    #   @ctx.fill()
+    
+
+    # middlePoint =
+    #   x: (circle1.x + circle2.x)/2
+    #   y: (circle1.y + circle2.y)/2
 
 
     # leftCircleRight = leftCircle.x + leftCircle.radius
@@ -174,11 +211,11 @@ class Goo
     # @ctx.fillStyle = if @isDebug then "rgba(34, 34, 34, 0.5)" else '#222'
     # @ctx.fill()
 
-    if @isDebug
-      @ctx.beginPath()
-      @ctx.arc(middlePoint.x, middlePoint.y, 2, 0, 2*Math.PI, false)
-      @ctx.fillStyle = 'deeppink'
-      @ctx.fill()
+    # if @isDebug
+    #   @ctx.beginPath()
+    #   @ctx.arc(middlePoint.x, middlePoint.y, 2, 0, 2*Math.PI, false)
+    #   @ctx.fillStyle = 'deeppink'
+    #   @ctx.fill()
     
 
   circleMath:(o)->
@@ -287,7 +324,7 @@ class Goo
     # offset = 600
     angle = 5*360
     console.log @helpers
-    tween = new TWEEN.Tween({p:0}).to({p:1}, 20000)
+    tween = new TWEEN.Tween({p:0}).to({p:1}, 200000)
       .onUpdate ->
         it.ctx.clear()
         it.circle2.draw()
