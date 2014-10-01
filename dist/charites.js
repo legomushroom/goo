@@ -64,6 +64,7 @@ Goo = (function() {
     this.ctx = this.canvas.getContext('2d');
     this.width = parseInt(this.canvas.getAttribute('width'), 10);
     this.height = parseInt(this.canvas.getAttribute('height'), 10);
+    this.deg = Math.PI / 180;
     return this.isDebug = true;
   };
 
@@ -71,14 +72,14 @@ Goo = (function() {
     this.circle1 = new Circle({
       ctx: this.ctx,
       x: 400,
-      y: 600,
+      y: 400,
       radius: 100,
       fill: '#222'
     });
     return this.circle2 = new Circle({
       ctx: this.ctx,
-      x: 450,
-      y: 200,
+      x: 600,
+      y: 400,
       radius: 100,
       fill: '#222'
     });
@@ -177,20 +178,18 @@ Goo = (function() {
   };
 
   Goo.prototype.circleMath = function(o) {
-    var angle, angle2, angleShift, angleSize1, angleSize12, angleSize2, angleSize22, deg, dirAngle, dx, intPoint, line1, pX, pY, point1X, point1X2, point1Y, point1Y2, radius, vector1, vector2, vectorAngle;
+    var angle, angle2, angleShift, angleSize1, angleSize12, angleSize2, angleSize22, dirAngle, dx, intPoint, line1, pX, pY, point1X, point1X2, point1Y, point1Y2, radius, vector1, vector2, vectorAngle;
     this.ctx.beginPath();
-    deg = Math.PI / 180;
     if (o.dir === 'left') {
       dx = Math.abs(o.circle.x - o.centerLine.start.x);
     } else {
       dx = Math.abs(o.circle.x - o.centerLine.start.x);
     }
-    console.log(o.angle);
     angleShift = o.side === 'bottom' ? 180 - o.angle : 180 + o.angle;
-    angleSize1 = (90 + angleShift + (dx / 4)) * deg;
-    angleSize12 = angleSize1 + (1 * deg);
-    angleSize2 = (90 - (dx / 4)) * deg;
-    angleSize22 = angleSize2 + (1 * deg);
+    angleSize1 = (90 + angleShift + (dx / 4)) * this.deg;
+    angleSize12 = angleSize1 + (1 * this.deg);
+    angleSize2 = (90 - (dx / 4)) * this.deg;
+    angleSize22 = angleSize2 + (1 * this.deg);
     if (o.side !== 'bottom') {
       if (o.dir === 'left') {
         angle = -angleSize1;
@@ -215,9 +214,9 @@ Goo = (function() {
     vector1 = point1Y - point1Y2;
     vector2 = point1X - point1X2;
     if (o.side !== 'bottom') {
-      dirAngle = o.dir === 'left' ? 180 * deg : 0;
+      dirAngle = o.dir === 'left' ? 180 * this.deg : 0;
     } else {
-      dirAngle = o.dir === 'left' ? 180 * deg : 0;
+      dirAngle = o.dir === 'left' ? 180 * this.deg : 0;
     }
     vectorAngle = Math.atan(vector1 / vector2) + dirAngle;
     radius = 2000;
@@ -293,20 +292,23 @@ Goo = (function() {
   };
 
   Goo.prototype.run = function() {
-    var it, offset, start, tween;
+    var angle, it, tween;
     it = this;
-    start = 850;
-    offset = 600;
+    angle = 5 * 360;
+    console.log(this.helpers);
     tween = new TWEEN.Tween({
       p: 0
     }).to({
       p: 1
-    }, 2000).onUpdate(function() {
+    }, 20000).onUpdate(function() {
+      var x, y;
       it.ctx.clear();
       it.circle2.draw();
+      x = 600 + Math.cos(angle * it.deg * this.p) * 300;
+      y = 400 + Math.sin(angle * it.deg * this.p) * 300;
       it.circle1.set({
-        x: it.circle1.x,
-        y: start - this.p * offset
+        x: x,
+        y: y
       });
       return it.gooCircles(it.circle1, it.circle2);
     }).yoyo(true).repeat(999).start();

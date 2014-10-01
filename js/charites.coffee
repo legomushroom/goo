@@ -47,20 +47,21 @@ class Goo
     @ctx    = @canvas.getContext('2d')
     @width  = parseInt(@canvas.getAttribute('width'), 10)
     @height = parseInt(@canvas.getAttribute('height'), 10)
+    @deg = Math.PI/180
     @isDebug = true
 
   createCircles:->
     @circle1 = new Circle
       ctx: @ctx
       x: 400
-      y: 600
+      y: 400
       radius: 100
       # fill: '#DD2476'
       fill: '#222'
     @circle2 = new Circle
       ctx: @ctx
-      x: 450
-      y: 200
+      x: 600
+      y: 400
       radius: 100
       fill: '#222'
       # fill: '#12FFF7'
@@ -132,7 +133,6 @@ class Goo
 
     return if curvePoints3.handlePoint.y < curvePoints1.handlePoint.y
       
-
     @ctx.beginPath()
     @ctx.moveTo(curvePoints1.circlePoint.x,curvePoints1.circlePoint.y)
     x1 = curvePoints1.handlePoint.x
@@ -165,19 +165,17 @@ class Goo
 
   circleMath:(o)->
     @ctx.beginPath()
-    deg = Math.PI/180
-
     if o.dir is 'left'
       dx = Math.abs o.circle.x - o.centerLine.start.x
     else
       dx = Math.abs o.circle.x - o.centerLine.start.x
 
-    console.log o.angle
+    # console.log o.angle
     # used for shifting points on circles
     angleShift = if o.side is 'bottom' then 180-o.angle
     else 180+o.angle
-    angleSize1 = (90+angleShift+(dx/4))*deg; angleSize12 = angleSize1 + (1*deg)
-    angleSize2 = (90-(dx/4))*deg; angleSize22 = angleSize2 + (1*deg)
+    angleSize1 = (90+angleShift+(dx/4))*@deg; angleSize12 = angleSize1+(1*@deg)
+    angleSize2 = (90-(dx/4))*@deg; angleSize22 = angleSize2 + (1*@deg)
 
     if o.side isnt 'bottom'
       if o.dir is 'left' then angle = -angleSize1; angle2 = -angleSize12
@@ -195,9 +193,9 @@ class Goo
     vector2 = point1X - point1X2
 
     if o.side isnt 'bottom'
-      dirAngle = if o.dir is 'left' then 180*deg else 0
+      dirAngle = if o.dir is 'left' then 180*@deg else 0
     else
-      dirAngle = if o.dir is 'left' then 180*deg else 0
+      dirAngle = if o.dir is 'left' then 180*@deg else 0
 
     vectorAngle = Math.atan(vector1/vector2) + dirAngle
 
@@ -268,14 +266,18 @@ class Goo
 
   run:->
     it = @
-    start  = 850
-    offset = 600
-    tween = new TWEEN.Tween({p:0}).to({p:1}, 2000)
+    # start  = 850
+    # offset = 600
+    angle = 5*360
+    console.log @helpers
+    tween = new TWEEN.Tween({p:0}).to({p:1}, 20000)
       .onUpdate ->
         it.ctx.clear()
         it.circle2.draw()
+        x = 600 + Math.cos(angle*it.deg*@p)*300
+        y = 400 + Math.sin(angle*it.deg*@p)*300
         it.circle1.set
-          x: it.circle1.x, y: start - @p*offset
+          x: x, y: y
 
         # it.circle3.set
         #   x: start - 200 - @p*offset, y: it.circle1.y
