@@ -186,10 +186,10 @@ Goo = (function() {
       dx = Math.abs(o.circle.x - o.centerLine.start.x);
     }
     console.log(o.angle);
-    angleShift = o.side === 'bottom' ? o.angle : -o.angle;
+    angleShift = o.side === 'bottom' ? 180 - o.angle : 180 + o.angle;
     angleSize1 = (90 + angleShift + (dx / 4)) * deg;
     angleSize12 = angleSize1 + (1 * deg);
-    angleSize2 = (90 + angleShift - (dx / 4)) * deg;
+    angleSize2 = (90 - (dx / 4)) * deg;
     angleSize22 = angleSize2 + (1 * deg);
     if (o.side !== 'bottom') {
       if (o.dir === 'left') {
@@ -296,7 +296,7 @@ Goo = (function() {
     var it, offset, start, tween;
     it = this;
     start = 850;
-    offset = 800;
+    offset = 600;
     tween = new TWEEN.Tween({
       p: 0
     }).to({

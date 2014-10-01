@@ -174,10 +174,10 @@ class Goo
 
     console.log o.angle
     # used for shifting points on circles
-    angleShift = if o.side is 'bottom' then o.angle
-    else -o.angle
+    angleShift = if o.side is 'bottom' then 180-o.angle
+    else 180+o.angle
     angleSize1 = (90+angleShift+(dx/4))*deg; angleSize12 = angleSize1 + (1*deg)
-    angleSize2 = (90+angleShift-(dx/4))*deg; angleSize22 = angleSize2 + (1*deg)
+    angleSize2 = (90-(dx/4))*deg; angleSize22 = angleSize2 + (1*deg)
 
     if o.side isnt 'bottom'
       if o.dir is 'left' then angle = -angleSize1; angle2 = -angleSize12
@@ -269,7 +269,7 @@ class Goo
   run:->
     it = @
     start  = 850
-    offset = 800
+    offset = 600
     tween = new TWEEN.Tween({p:0}).to({p:1}, 2000)
       .onUpdate ->
         it.ctx.clear()
