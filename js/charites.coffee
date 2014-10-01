@@ -115,7 +115,8 @@ class Goo
       @ctx.fillStyle = 'deeppink'
       @ctx.fill()
 
-    # FIND MIDDLE POINT
+    # FIND MIDDLE Line
+    #   find middle point
     middlePoint =
       x: (point1.x + point2.x)/2
       y: (point1.y + point2.y)/2
@@ -124,6 +125,40 @@ class Goo
       @ctx.arc(middlePoint.x, middlePoint.y, 2, 0, 2*Math.PI, false)
       @ctx.fillStyle = 'cyan'
       @ctx.fill()
+    #   find middle circle radius
+    dx = Math.abs point1.x - point2.x
+    dy = Math.abs point1.y - point2.y
+    radius = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2))/2
+    if @isDebug
+      @ctx.beginPath()
+      @ctx.arc(middlePoint.x, middlePoint.y, radius, 0, 2*Math.PI, false)
+      @ctx.strokeStyle = 'cyan'
+      @ctx.lineWidth = .25
+      @ctx.stroke()
+
+    middleLinePoint1 =
+      x: middlePoint.x + Math.cos(angle+(90*@deg))*radius
+      y: middlePoint.y + Math.sin(angle+(90*@deg))*radius
+    middleLinePoint2 =
+      x: middlePoint.x + Math.cos(angle+(-90*@deg))*radius
+      y: middlePoint.y + Math.sin(angle+(-90*@deg))*radius
+    if @isDebug
+      @ctx.beginPath()
+      @ctx.arc(middleLinePoint1.x, middleLinePoint1.y, 2, 0, 2*Math.PI, false)
+      @ctx.arc(middleLinePoint2.x, middleLinePoint2.y, 2, 0, 2*Math.PI, false)
+      @ctx.fillStyle = 'orange'
+      @ctx.fill()
+
+    middleLine =
+      start: middleLinePoint1
+      end:   middleLinePoint2
+
+    if @isDebug
+      @ctx.beginPath()
+      @ctx.moveTo(middleLine.start.x, middleLine.start.y)
+      @ctx.lineTo(middleLine.end.x, middleLine.end.y)
+      @ctx.strokeStyle = 'orange'
+      @ctx.stroke()
 
 
     # leftCircleRight = leftCircle.x + leftCircle.radius
@@ -308,13 +343,15 @@ class Goo
     # start  = 850
     # offset = 600
     angle = 5*360
+    radius = 300
+    radiusOffset = radius/2
     console.log @helpers
     tween = new TWEEN.Tween({p:0}).to({p:1}, 200000)
       .onUpdate ->
         it.ctx.clear()
         it.circle2.draw()
-        x = 600 + Math.cos(angle*it.deg*@p)*300
-        y = 400 + Math.sin(angle*it.deg*@p)*300
+        x = 600 + Math.cos(angle*it.deg*@p)*(radius-(radiusOffset*@p))
+        y = 400 + Math.sin(angle*it.deg*@p)*(radius-(radiusOffset*@p))
         it.circle1.set
           x: x, y: y
 

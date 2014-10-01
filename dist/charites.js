@@ -84,7 +84,7 @@ Goo = (function() {
   };
 
   Goo.prototype.gooCircles = function(circle1, circle2) {
-    var angle, angleShift1, angleShift2, bigCircle, bottomCircle, leftCircle, middlePoint, point1, point2, rightCircle, smallCircle, topCircle, x, y;
+    var angle, angleShift1, angleShift2, bigCircle, bottomCircle, dx, dy, leftCircle, middleLine, middleLinePoint1, middleLinePoint2, middlePoint, point1, point2, radius, rightCircle, smallCircle, topCircle, x, y;
     if (circle1.radius >= circle2.radius) {
       bigCircle = circle1;
       smallCircle = circle2;
@@ -134,7 +134,43 @@ Goo = (function() {
       this.ctx.beginPath();
       this.ctx.arc(middlePoint.x, middlePoint.y, 2, 0, 2 * Math.PI, false);
       this.ctx.fillStyle = 'cyan';
-      return this.ctx.fill();
+      this.ctx.fill();
+    }
+    dx = Math.abs(point1.x - point2.x);
+    dy = Math.abs(point1.y - point2.y);
+    radius = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)) / 2;
+    if (this.isDebug) {
+      this.ctx.beginPath();
+      this.ctx.arc(middlePoint.x, middlePoint.y, radius, 0, 2 * Math.PI, false);
+      this.ctx.strokeStyle = 'cyan';
+      this.ctx.lineWidth = .25;
+      this.ctx.stroke();
+    }
+    middleLinePoint1 = {
+      x: middlePoint.x + Math.cos(angle + (90 * this.deg)) * radius,
+      y: middlePoint.y + Math.sin(angle + (90 * this.deg)) * radius
+    };
+    middleLinePoint2 = {
+      x: middlePoint.x + Math.cos(angle + (-90 * this.deg)) * radius,
+      y: middlePoint.y + Math.sin(angle + (-90 * this.deg)) * radius
+    };
+    if (this.isDebug) {
+      this.ctx.beginPath();
+      this.ctx.arc(middleLinePoint1.x, middleLinePoint1.y, 2, 0, 2 * Math.PI, false);
+      this.ctx.arc(middleLinePoint2.x, middleLinePoint2.y, 2, 0, 2 * Math.PI, false);
+      this.ctx.fillStyle = 'orange';
+      this.ctx.fill();
+    }
+    middleLine = {
+      start: middleLinePoint1,
+      end: middleLinePoint2
+    };
+    if (this.isDebug) {
+      this.ctx.beginPath();
+      this.ctx.moveTo(middleLine.start.x, middleLine.start.y);
+      this.ctx.lineTo(middleLine.end.x, middleLine.end.y);
+      this.ctx.strokeStyle = 'orange';
+      return this.ctx.stroke();
     }
   };
 
@@ -253,9 +289,11 @@ Goo = (function() {
   };
 
   Goo.prototype.run = function() {
-    var angle, it, tween;
+    var angle, it, radius, radiusOffset, tween;
     it = this;
     angle = 5 * 360;
+    radius = 300;
+    radiusOffset = radius / 2;
     console.log(this.helpers);
     tween = new TWEEN.Tween({
       p: 0
@@ -265,8 +303,8 @@ Goo = (function() {
       var x, y;
       it.ctx.clear();
       it.circle2.draw();
-      x = 600 + Math.cos(angle * it.deg * this.p) * 300;
-      y = 400 + Math.sin(angle * it.deg * this.p) * 300;
+      x = 600 + Math.cos(angle * it.deg * this.p) * (radius - (radiusOffset * this.p));
+      y = 400 + Math.sin(angle * it.deg * this.p) * (radius - (radiusOffset * this.p));
       it.circle1.set({
         x: x,
         y: y
