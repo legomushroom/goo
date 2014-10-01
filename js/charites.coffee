@@ -94,20 +94,20 @@ class Goo
       bottomCircle  = circle1
       topCircle = circle2
 
+    # FIND FACE POINTS
+    #   find the angle between two circles
     x = circle1.x - circle2.x
     y = circle1.y - circle2.y
     angle = Math.atan y/x
+    #   find a angle shift for circle1 and circle2
     angleShift1 = if x > 0 then 180*@deg else 0
     angleShift2 = if x > 0 then 0 else 180*@deg
-
     point1 =
       x: circle1.x + Math.cos(angle+angleShift1)*circle1.radius
       y: circle1.y + Math.sin(angle+angleShift1)*circle1.radius
-
     point2 =
       x: circle2.x + Math.cos(angle+angleShift2)*circle2.radius
       y: circle2.y + Math.sin(angle+angleShift2)*circle2.radius
-
     if @isDebug
       @ctx.beginPath()
       @ctx.arc(point1.x, point1.y, 2, 0, 2*Math.PI, false)
@@ -115,26 +115,15 @@ class Goo
       @ctx.fillStyle = 'deeppink'
       @ctx.fill()
 
-
-
-    # x = circle1.x - circle2.x
-    # y = circle1.y - circle2.y
-    # angle = Math.atan y/x
-
-    # point2 =
-    #   x: circle2.x + Math.cos(angle)*circle2.radius
-    #   y: circle2.y + Math.sin(angle)*circle2.radius
-
-    # if @isDebug
-    #   @ctx.beginPath()
-    #   @ctx.arc(point2.x, point2.y, 2, 0, 2*Math.PI, false)
-    #   @ctx.fillStyle = 'deeppink'
-    #   @ctx.fill()
-    
-
-    # middlePoint =
-    #   x: (circle1.x + circle2.x)/2
-    #   y: (circle1.y + circle2.y)/2
+    # FIND MIDDLE POINT
+    middlePoint =
+      x: (point1.x + point2.x)/2
+      y: (point1.y + point2.y)/2
+    if @isDebug
+      @ctx.beginPath()
+      @ctx.arc(middlePoint.x, middlePoint.y, 2, 0, 2*Math.PI, false)
+      @ctx.fillStyle = 'cyan'
+      @ctx.fill()
 
 
     # leftCircleRight = leftCircle.x + leftCircle.radius
@@ -211,11 +200,7 @@ class Goo
     # @ctx.fillStyle = if @isDebug then "rgba(34, 34, 34, 0.5)" else '#222'
     # @ctx.fill()
 
-    # if @isDebug
-    #   @ctx.beginPath()
-    #   @ctx.arc(middlePoint.x, middlePoint.y, 2, 0, 2*Math.PI, false)
-    #   @ctx.fillStyle = 'deeppink'
-    #   @ctx.fill()
+    
     
 
   circleMath:(o)->

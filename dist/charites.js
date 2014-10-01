@@ -84,7 +84,7 @@ Goo = (function() {
   };
 
   Goo.prototype.gooCircles = function(circle1, circle2) {
-    var angle, angleShift1, angleShift2, bigCircle, bottomCircle, leftCircle, point1, point2, rightCircle, smallCircle, topCircle, x, y;
+    var angle, angleShift1, angleShift2, bigCircle, bottomCircle, leftCircle, middlePoint, point1, point2, rightCircle, smallCircle, topCircle, x, y;
     if (circle1.radius >= circle2.radius) {
       bigCircle = circle1;
       smallCircle = circle2;
@@ -124,6 +124,16 @@ Goo = (function() {
       this.ctx.arc(point1.x, point1.y, 2, 0, 2 * Math.PI, false);
       this.ctx.arc(point2.x, point2.y, 2, 0, 2 * Math.PI, false);
       this.ctx.fillStyle = 'deeppink';
+      this.ctx.fill();
+    }
+    middlePoint = {
+      x: (point1.x + point2.x) / 2,
+      y: (point1.y + point2.y) / 2
+    };
+    if (this.isDebug) {
+      this.ctx.beginPath();
+      this.ctx.arc(middlePoint.x, middlePoint.y, 2, 0, 2 * Math.PI, false);
+      this.ctx.fillStyle = 'cyan';
       return this.ctx.fill();
     }
   };
