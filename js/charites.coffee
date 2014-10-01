@@ -128,7 +128,8 @@ class Goo
     #   find middle circle radius
     dx = Math.abs point1.x - point2.x
     dy = Math.abs point1.y - point2.y
-    radius = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2))/2
+    # radius = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2))/2
+    radius = 200
     if @isDebug
       @ctx.beginPath()
       @ctx.arc(middlePoint.x, middlePoint.y, radius, 0, 2*Math.PI, false)
@@ -344,9 +345,9 @@ class Goo
     # offset = 600
     angle = 5*360
     radius = 300
-    radiusOffset = radius/2
+    radiusOffset = 150
     console.log @helpers
-    tween = new TWEEN.Tween({p:0}).to({p:1}, 200000)
+    tween = new TWEEN.Tween({p:0}).to({p:1}, 20000)
       .onUpdate ->
         it.ctx.clear()
         it.circle2.draw()
