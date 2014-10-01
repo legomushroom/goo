@@ -29,7 +29,7 @@ Circle = (function() {
   Circle.prototype.draw = function() {
     this.ctx.beginPath();
     this.ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI, false);
-    this.ctx.fillStyle = this.fill || '#222';
+    this.ctx.fillStyle = this.fill || '#999';
     return this.ctx.fill();
   };
 
@@ -73,20 +73,18 @@ Goo = (function() {
       ctx: this.ctx,
       x: 400,
       y: 400,
-      radius: 100,
-      fill: '#222'
+      radius: 100
     });
     return this.circle2 = new Circle({
       ctx: this.ctx,
       x: 600,
       y: 400,
-      radius: 100,
-      fill: '#222'
+      radius: 100
     });
   };
 
   Goo.prototype.gooCircles = function(circle1, circle2) {
-    var bigCircle, centerLine, circlesAngle, circlesDX, circlesDY, curvePoints1, curvePoints2, curvePoints3, curvePoints4, dx, leftCircle, leftCircleRight, rightCircle, rightCircleLeft, smallCircle, x, x1, x2, x3, y1, y2, y3;
+    var bigCircle, bottomCircle, leftCircle, middlePoint, rightCircle, smallCircle, topCircle;
     if (circle1.radius >= circle2.radius) {
       bigCircle = circle1;
       smallCircle = circle2;
@@ -101,80 +99,23 @@ Goo = (function() {
       leftCircle = circle1;
       rightCircle = circle2;
     }
-    leftCircleRight = leftCircle.x + leftCircle.radius;
-    rightCircleLeft = rightCircle.x - rightCircle.radius;
-    dx = Math.abs((leftCircleRight - rightCircleLeft) / 2);
-    this.ctx.beginPath();
-    if (leftCircleRight < rightCircleLeft) {
-      x = leftCircleRight + dx;
+    if (circle1.y >= circle2.y) {
+      topCircle = circle1;
+      bottomCircle = circle2;
     } else {
-      x = leftCircleRight - dx;
+      bottomCircle = circle1;
+      topCircle = circle2;
     }
-    centerLine = {
-      start: {
-        x: x,
-        y: bigCircle.y - bigCircle.radius
-      },
-      end: {
-        x: x,
-        y: bigCircle.y + bigCircle.radius
-      }
+    middlePoint = {
+      x: (circle1.x + circle2.x) / 2,
+      y: (circle1.y + circle2.y) / 2
     };
-    circlesDX = Math.abs(circle1.x - circle2.x);
-    circlesDY = Math.abs(circle1.y - circle2.y);
-    circlesAngle = Math.atan(circlesDY / circlesDX);
-    circlesAngle = (circlesAngle * 180) / Math.PI;
-    curvePoints1 = this.circleMath({
-      centerLine: centerLine,
-      circle: circle2,
-      dir: circle2 !== leftCircle ? 'left' : void 0,
-      angle: circlesAngle
-    });
-    curvePoints2 = this.circleMath({
-      centerLine: centerLine,
-      circle: circle1,
-      dir: circle1 !== leftCircle ? 'left' : void 0,
-      angle: circlesAngle
-    });
-    curvePoints3 = this.circleMath({
-      centerLine: centerLine,
-      circle: circle2,
-      side: 'bottom',
-      dir: circle2 !== leftCircle ? 'left' : void 0,
-      angle: circlesAngle
-    });
-    curvePoints4 = this.circleMath({
-      centerLine: centerLine,
-      circle: circle1,
-      side: 'bottom',
-      dir: circle1 !== leftCircle ? 'left' : void 0,
-      angle: circlesAngle
-    });
-    if (curvePoints3.handlePoint.y < curvePoints1.handlePoint.y) {
-      return;
+    if (this.isDebug) {
+      this.ctx.beginPath();
+      this.ctx.arc(middlePoint.x, middlePoint.y, 2, 0, 2 * Math.PI, false);
+      this.ctx.fillStyle = 'deeppink';
+      return this.ctx.fill();
     }
-    this.ctx.beginPath();
-    this.ctx.moveTo(curvePoints1.circlePoint.x, curvePoints1.circlePoint.y);
-    x1 = curvePoints1.handlePoint.x;
-    y1 = curvePoints1.handlePoint.y;
-    x2 = curvePoints2.handlePoint.x;
-    y2 = curvePoints2.handlePoint.y;
-    x3 = curvePoints2.circlePoint.x;
-    y3 = curvePoints2.circlePoint.y;
-    this.ctx.bezierCurveTo(x1, y1, x2, y2, x3, y3);
-    this.ctx.lineTo(curvePoints4.circlePoint.x, curvePoints4.circlePoint.y);
-    x1 = curvePoints4.handlePoint.x;
-    y1 = curvePoints4.handlePoint.y;
-    x2 = curvePoints3.handlePoint.x;
-    y2 = curvePoints3.handlePoint.y;
-    x3 = curvePoints3.circlePoint.x;
-    y3 = curvePoints3.circlePoint.y;
-    this.ctx.bezierCurveTo(x1, y1, x2, y2, x3, y3);
-    this.ctx.closePath();
-    x1 = curvePoints1.circlePoint.x;
-    x2 = curvePoints4.circlePoint.x;
-    this.ctx.fillStyle = this.isDebug ? "rgba(34, 34, 34, 0.5)" : '#222';
-    return this.ctx.fill();
   };
 
   Goo.prototype.circleMath = function(o) {

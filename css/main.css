@@ -1220,6 +1220,9 @@ a,
   fill: #717171;
   cursor: pointer;
 }
+body {
+  background: #222;
+}
 img {
   position: absolute;
   top: 0;
