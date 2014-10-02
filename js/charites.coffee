@@ -4,12 +4,10 @@ TWEEN  = require './vendor/tween'
 
 
 # TODO:
-#   add connection length property
-#   make it work with different circle sizes
-#   make circle work with different y
-#     find an angle
 #   change circle sizes on connection
 #   GC fix
+#   make it work on diff y
+#     find a curve
 
 class Circle
   constructor:(@o={})-> @vars(); @draw()
@@ -128,8 +126,8 @@ class Goo
     #   find middle circle radius
     dx = Math.abs point1.x - point2.x
     dy = Math.abs point1.y - point2.y
-    # radius = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2))/2
-    radius = 200
+    radius = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2))/2
+    # radius = 2000
     if @isDebug
       @ctx.beginPath()
       @ctx.arc(middlePoint.x, middlePoint.y, radius, 0, 2*Math.PI, false)
@@ -346,7 +344,7 @@ class Goo
     angle = 5*360
     radius = 300
     radiusOffset = 150
-    console.log @helpers
+
     tween = new TWEEN.Tween({p:0}).to({p:1}, 20000)
       .onUpdate ->
         it.ctx.clear()

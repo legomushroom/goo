@@ -138,7 +138,7 @@ Goo = (function() {
     }
     dx = Math.abs(point1.x - point2.x);
     dy = Math.abs(point1.y - point2.y);
-    radius = 200;
+    radius = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)) / 2;
     if (this.isDebug) {
       this.ctx.beginPath();
       this.ctx.arc(middlePoint.x, middlePoint.y, radius, 0, 2 * Math.PI, false);
@@ -294,7 +294,6 @@ Goo = (function() {
     angle = 5 * 360;
     radius = 300;
     radiusOffset = 150;
-    console.log(this.helpers);
     tween = new TWEEN.Tween({
       p: 0
     }).to({
