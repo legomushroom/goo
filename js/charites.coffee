@@ -124,17 +124,18 @@ class Goo
       @ctx.fillStyle = 'cyan'
       @ctx.fill()
     #   find middle circle radius
+    #   not necessary but nice
     dx = Math.abs point1.x - point2.x
     dy = Math.abs point1.y - point2.y
     radius = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2))/2
-    # radius = 2000
+    radius = 2000
     if @isDebug
       @ctx.beginPath()
       @ctx.arc(middlePoint.x, middlePoint.y, radius, 0, 2*Math.PI, false)
       @ctx.strokeStyle = 'cyan'
       @ctx.lineWidth = .25
       @ctx.stroke()
-
+    # find middle line
     middleLinePoint1 =
       x: middlePoint.x + Math.cos(angle+(90*@deg))*radius
       y: middlePoint.y + Math.sin(angle+(90*@deg))*radius
@@ -147,11 +148,10 @@ class Goo
       @ctx.arc(middleLinePoint2.x, middleLinePoint2.y, 2, 0, 2*Math.PI, false)
       @ctx.fillStyle = 'orange'
       @ctx.fill()
-
     middleLine =
       start: middleLinePoint1
       end:   middleLinePoint2
-
+      center: middlePoint
     if @isDebug
       @ctx.beginPath()
       @ctx.moveTo(middleLine.start.x, middleLine.start.y)
@@ -159,159 +159,114 @@ class Goo
       @ctx.strokeStyle = 'orange'
       @ctx.stroke()
 
+    curvePoints1 = @circleMath
+      middleLine: middleLine
+      circle:     circle1
+      angle:      angle
 
-    # leftCircleRight = leftCircle.x + leftCircle.radius
-    # rightCircleLeft = rightCircle.x - rightCircle.radius
-    # dx = Math.abs (leftCircleRight-rightCircleLeft)/2
-    # @ctx.beginPath()
+    curvePoints2 = @circleMath
+      middleLine: middleLine
+      circle:     circle1
+      angle:      angle
+      side:       'top'
 
-    # if leftCircleRight < rightCircleLeft then x = leftCircleRight + dx
-    # else x = leftCircleRight - dx
-    # centerLine =
-    #   start: x: x, y: bigCircle.y - bigCircle.radius
-    #   end:   x: x, y: bigCircle.y + bigCircle.radius
+    curvePoints3 = @circleMath
+      middleLine: middleLine
+      circle:     circle2
+      angle:      angle
 
-    # circlesDX = Math.abs circle1.x - circle2.x
-    # circlesDY = Math.abs circle1.y - circle2.y
-    # circlesAngle = Math.atan(circlesDY/circlesDX)
-    # circlesAngle = (circlesAngle*180)/Math.PI
-
-    # curvePoints1 = @circleMath
-    #   centerLine: centerLine
-    #   circle:     circle2
-    #   dir:        if circle2 isnt leftCircle then 'left'
-    #   angle: circlesAngle
-
-    # curvePoints2 = @circleMath
-    #   centerLine: centerLine
-    #   circle:     circle1
-    #   dir:        if circle1 isnt leftCircle then 'left'
-    #   angle: circlesAngle
-
-    # curvePoints3 = @circleMath
-    #   centerLine: centerLine
-    #   circle:     circle2
-    #   side:       'bottom'
-    #   dir:        if circle2 isnt leftCircle then 'left'
-    #   angle: circlesAngle
-
-    # curvePoints4 = @circleMath
-    #   centerLine: centerLine
-    #   circle:     circle1
-    #   side:       'bottom'
-    #   dir:        if circle1 isnt leftCircle then 'left'
-    #   angle: circlesAngle
+    curvePoints4 = @circleMath
+      middleLine: middleLine
+      circle:     circle2
+      angle:      angle
+      side:       'top'
 
     # return if curvePoints3.handlePoint.y < curvePoints1.handlePoint.y
       
-    # @ctx.beginPath()
-    # @ctx.moveTo(curvePoints1.circlePoint.x,curvePoints1.circlePoint.y)
-    # x1 = curvePoints1.handlePoint.x
-    # y1 = curvePoints1.handlePoint.y
-    # x2 = curvePoints2.handlePoint.x
-    # y2 = curvePoints2.handlePoint.y
-    # x3 = curvePoints2.circlePoint.x
-    # y3 = curvePoints2.circlePoint.y
-    # @ctx.bezierCurveTo(x1,y1,x2,y2,x3,y3)
+    @ctx.beginPath()
+    @ctx.moveTo(curvePoints1.circlePoint.x,curvePoints1.circlePoint.y)
+    x1 = curvePoints1.handlePoint.x
+    y1 = curvePoints1.handlePoint.y
+    x2 = curvePoints4.handlePoint.x
+    y2 = curvePoints4.handlePoint.y
+    x3 = curvePoints4.circlePoint.x
+    y3 = curvePoints4.circlePoint.y
+    @ctx.bezierCurveTo(x1,y1,x2,y2,x3,y3)
 
-    # @ctx.lineTo(curvePoints4.circlePoint.x,curvePoints4.circlePoint.y)
-    # x1 = curvePoints4.handlePoint.x
-    # y1 = curvePoints4.handlePoint.y
-    # x2 = curvePoints3.handlePoint.x
-    # y2 = curvePoints3.handlePoint.y
-    # x3 = curvePoints3.circlePoint.x
-    # y3 = curvePoints3.circlePoint.y
-    # @ctx.bezierCurveTo(x1,y1,x2,y2,x3,y3)
+    @ctx.lineTo(curvePoints3.circlePoint.x,curvePoints3.circlePoint.y)
+    x1 = curvePoints3.handlePoint.x
+    y1 = curvePoints3.handlePoint.y
+    x2 = curvePoints2.handlePoint.x
+    y2 = curvePoints2.handlePoint.y
+    x3 = curvePoints2.circlePoint.x
+    y3 = curvePoints2.circlePoint.y
+    @ctx.bezierCurveTo(x1,y1,x2,y2,x3,y3)
+    @ctx.closePath()
 
+    @ctx.fillStyle = if @isDebug then "rgba(255, 255, 255, 0.5)" else '#222'
+    @ctx.fill()
 
-    # @ctx.closePath()
-    # x1 = curvePoints1.circlePoint.x
-    # x2 = curvePoints4.circlePoint.x
-    # # grd = @ctx.createLinearGradient(x2,0,x1,0)
-    # # grd.addColorStop(0,'#DD2476')
-    # # grd.addColorStop(1,'#12FFF7')
-    # # @ctx.fillStyle = grd
-    # @ctx.fillStyle = if @isDebug then "rgba(34, 34, 34, 0.5)" else '#222'
-    # @ctx.fill()
-
-    
-    
 
   circleMath:(o)->
-    @ctx.beginPath()
-    if o.dir is 'left'
-      dx = Math.abs o.circle.x - o.centerLine.start.x
-    else
-      dx = Math.abs o.circle.x - o.centerLine.start.x
+    circle = o.circle; angle  = o.angle; middleLine = o.middleLine
+    side = o.side
 
-    # console.log o.angle
-    # used for shifting points on circles
-    angleShift = if o.side is 'bottom' then 180-o.angle
-    else 180+o.angle
-    angleSize1 = (90+angleShift+(dx/4))*@deg; angleSize12 = angleSize1+(1*@deg)
-    angleSize2 = (90-(dx/4))*@deg; angleSize22 = angleSize2 + (1*@deg)
+    if @isDebug
+      @ctx.beginPath()
+      @ctx.arc(circle.x, circle.y, 2, 0, 2*Math.PI, false)
+      @ctx.fillStyle = 'cyan'
+      @ctx.fill()
 
-    if o.side isnt 'bottom'
-      if o.dir is 'left' then angle = -angleSize1; angle2 = -angleSize12
-      else angle = -angleSize2; angle2 = -angleSize22
-    else
-      if o.dir is 'left' then angle = angleSize1; angle2 = angleSize12
-      else angle = angleSize2; angle2 = angleSize22
+    dx = circle.x - middleLine.center.x
 
-    point1X = o.circle.x + (Math.cos(angle)*o.circle.radius)
-    point1Y = o.circle.y + (Math.sin(angle)*o.circle.radius)
-    point1X2 = o.circle.x + (Math.cos(angle2)*o.circle.radius)
-    point1Y2 = o.circle.y + (Math.sin(angle2)*o.circle.radius)
+    point1Angle = if dx > 0 then angle else angle+(180*@deg)
 
-    vector1 = point1Y - point1Y2
-    vector2 = point1X - point1X2
+    offsetAngle = if side is 'top' then (100*@deg) else -(100*@deg)
 
-    if o.side isnt 'bottom'
-      dirAngle = if o.dir is 'left' then 180*@deg else 0
-    else
-      dirAngle = if o.dir is 'left' then 180*@deg else 0
+    point1 =
+      x: circle.x + Math.cos(point1Angle+offsetAngle)*circle.radius
+      y: circle.y + Math.sin(point1Angle+offsetAngle)*circle.radius
 
-    vectorAngle = Math.atan(vector1/vector2) + dirAngle
+    point11 =
+      x: circle.x + Math.cos(point1Angle+(1.01*offsetAngle))*circle.radius
+      y: circle.y + Math.sin(point1Angle+(1.01*offsetAngle))*circle.radius
 
-    radius = 2000 # !hardcode!
-
-    pX = point1X + (Math.cos(vectorAngle)*radius)
-    pY = point1Y + (Math.sin(vectorAngle)*radius)
+    dx = point1.x - point11.x
+    dy = point1.y - point11.y
+    intersectAngle = if middleLine.center.x - point1.x > 0
+      Math.atan dy/dx
+    else Math.atan(dy/dx) + 180*@deg
 
     line1 =
-      start: x: pX,      y: pY
-      end:   x: point1X, y: point1Y
+      start: point1
+      end:   point11
+    intPoint = @intersection line1, middleLine
 
-    intPoint = @intersection line1, o.centerLine
-
-    # visualize
     if @isDebug
-      @ctx.arc(point1X, point1Y, radius, 0, 2*Math.PI, false)
-
-      @ctx.moveTo pX, pY
-      @ctx.lineTo point1X, point1Y
-      @ctx.stroke()
-
       @ctx.beginPath()
       @ctx.arc(intPoint.x, intPoint.y, 2, 0, 2*Math.PI, false)
+      @ctx.fillStyle = 'yellow'
+      @ctx.fill()
+
+      @ctx.beginPath()
+      @ctx.arc(point1.x, point1.y, 2, 0, 2*Math.PI, false)
       @ctx.fillStyle = 'cyan'
       @ctx.fill()
 
       @ctx.beginPath()
-      @ctx.arc(point1X, point1Y, 2, 0, 2*Math.PI, false)
-      @ctx.arc(point1X2, point1Y2, 2, 0, 2*Math.PI, false)
-      @ctx.fillStyle = 'deeppink'
+      @ctx.arc(point11.x, point11.y, 1, 0, 2*Math.PI, false)
+      @ctx.fillStyle = 'cyan'
       @ctx.fill()
-      
+
       @ctx.beginPath()
-      @ctx.moveTo o.centerLine.start.x, o.centerLine.start.y
-      @ctx.lineTo o.centerLine.end.x, o.centerLine.end.y
-      @ctx.strokeStyle = '#ccc'
+      @ctx.moveTo(point1.x, point1.y)
+      @ctx.lineTo(intPoint.x, intPoint.y)
+      @ctx.strokeStyle = 'yellow'
       @ctx.stroke()
 
     {
       handlePoint: x: intPoint.x, y: intPoint.y
-      circlePoint: x: point1X, y: point1Y
+      circlePoint: x: point1.x, y: point1.y
     }
 
   intersection:(line1, line2)->
@@ -343,9 +298,10 @@ class Goo
     # offset = 600
     angle = 5*360
     radius = 300
-    radiusOffset = 150
+    # radiusOffset = 150
+    radiusOffset = 0
 
-    tween = new TWEEN.Tween({p:0}).to({p:1}, 20000)
+    tween = new TWEEN.Tween({p:0}).to({p:1}, 200000)
       .onUpdate ->
         it.ctx.clear()
         it.circle2.draw()
