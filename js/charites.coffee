@@ -164,7 +164,8 @@ class Goo
     isIntersectY = isRadiusIntY ^ isCirclesIntY
     isIntersect = isIntersectX or isIntersectY
 
-    distance = Math.max distance, 0
+    # console.log distance
+    # distance = Math.max distance, 0
 
     if @isDebug
       @ctx.beginPath()
@@ -178,6 +179,7 @@ class Goo
       angle:      angle
       distance:   distance
       isSmall: true
+      isIntersect: isIntersect
 
     curvePoints2 = @circleMath
       middleLine: middleLine
@@ -186,12 +188,14 @@ class Goo
       side:       'top'
       distance:   distance
       isSmall: true
+      isIntersect: isIntersect
 
     curvePoints3 = @circleMath
       middleLine: middleLine
       circle:     circle2
       angle:      angle
       distance:   distance
+      isIntersect: isIntersect
 
     curvePoints4 = @circleMath
       middleLine: middleLine
@@ -199,6 +203,7 @@ class Goo
       angle:      angle
       side:       'top'
       distance:   distance
+      isIntersect: isIntersect
     
     if reactDistance < radius then return
       
@@ -229,12 +234,18 @@ class Goo
   circleMath:(o)->
     circle = o.circle; angle  = o.angle; middleLine = o.middleLine
     side = o.side; dist = o.distance; isSmall = o.isSmall
+    isInt = o.isIntersect
 
     dx = circle.x - middleLine.center.x
     point1Angle = if dx > 0 then angle else angle+(180*@deg)
 
-    offset = if isSmall then 0 else 0
-    absOffsetAngle = (90+(offset)+(45*dist))*@deg
+
+
+    offset = if isInt and isSmall and dist < 0
+      35*(Math.max dist, -1)
+    else 0
+    handlesAngle = if dist > 0 then 45*dist else 0
+    absOffsetAngle = (90+(offset)+(handlesAngle))*@deg
     offsetAngle = if side is 'top' then absOffsetAngle else -absOffsetAngle
 
     point1 =
@@ -313,8 +324,8 @@ class Goo
 
   run:->
     it = @
-    start  = 200
-    offset = 800
+    start  = 400
+    offset = 400
     angle = 5*360
     radius = 365
     radiusOffset = 349

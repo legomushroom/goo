@@ -185,7 +185,6 @@ Goo = (function() {
     isIntersectX = isRadiusIntX ^ isCirclesIntX;
     isIntersectY = isRadiusIntY ^ isCirclesIntY;
     isIntersect = isIntersectX || isIntersectY;
-    distance = Math.max(distance, 0);
     if (this.isDebug) {
       this.ctx.beginPath();
       this.ctx.arc(middlePoint.x, middlePoint.y, reactDistance, 0, 2 * Math.PI, false);
@@ -197,7 +196,8 @@ Goo = (function() {
       circle: circle1,
       angle: angle,
       distance: distance,
-      isSmall: true
+      isSmall: true,
+      isIntersect: isIntersect
     });
     curvePoints2 = this.circleMath({
       middleLine: middleLine,
@@ -205,20 +205,23 @@ Goo = (function() {
       angle: angle,
       side: 'top',
       distance: distance,
-      isSmall: true
+      isSmall: true,
+      isIntersect: isIntersect
     });
     curvePoints3 = this.circleMath({
       middleLine: middleLine,
       circle: circle2,
       angle: angle,
-      distance: distance
+      distance: distance,
+      isIntersect: isIntersect
     });
     curvePoints4 = this.circleMath({
       middleLine: middleLine,
       circle: circle2,
       angle: angle,
       side: 'top',
-      distance: distance
+      distance: distance,
+      isIntersect: isIntersect
     });
     if (reactDistance < radius) {
       return;
@@ -246,17 +249,19 @@ Goo = (function() {
   };
 
   Goo.prototype.circleMath = function(o) {
-    var absOffsetAngle, angle, circle, dist, dx, dy, intPoint, intersectAngle, isSmall, line1, middleLine, offset, offsetAngle, point1, point11, point1Angle, side;
+    var absOffsetAngle, angle, circle, dist, dx, dy, handlesAngle, intPoint, intersectAngle, isInt, isSmall, line1, middleLine, offset, offsetAngle, point1, point11, point1Angle, side;
     circle = o.circle;
     angle = o.angle;
     middleLine = o.middleLine;
     side = o.side;
     dist = o.distance;
     isSmall = o.isSmall;
+    isInt = o.isIntersect;
     dx = circle.x - middleLine.center.x;
     point1Angle = dx > 0 ? angle : angle + (180 * this.deg);
-    offset = isSmall ? 0 : 0;
-    absOffsetAngle = (90 + offset + (45 * dist)) * this.deg;
+    offset = isInt && isSmall && dist < 0 ? 35 * (Math.max(dist, -1)) : 0;
+    handlesAngle = dist > 0 ? 45 * dist : 0;
+    absOffsetAngle = (90 + offset + handlesAngle) * this.deg;
     offsetAngle = side === 'top' ? absOffsetAngle : -absOffsetAngle;
     point1 = {
       x: circle.x + Math.cos(point1Angle + offsetAngle) * circle.radius,
@@ -338,8 +343,8 @@ Goo = (function() {
   Goo.prototype.run = function() {
     var angle, it, offset, radius, radiusOffset, start, tween;
     it = this;
-    start = 200;
-    offset = 800;
+    start = 400;
+    offset = 400;
     angle = 5 * 360;
     radius = 365;
     radiusOffset = 349;
