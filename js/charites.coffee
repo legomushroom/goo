@@ -8,6 +8,7 @@ TWEEN  = require './vendor/tween'
 #   GC fix
 #   make it work on diff y
 
+
 class Circle
   constructor:(@o={})-> @vars(); @draw()
 
@@ -45,7 +46,7 @@ class Goo
     @width  = parseInt(@canvas.getAttribute('width'), 10)
     @height = parseInt(@canvas.getAttribute('height'), 10)
     @deg = Math.PI/180
-    # @isDebug = true
+    @isDebug = true
 
   createCircles:->
     @circle1 = new Circle
@@ -53,22 +54,11 @@ class Goo
       x: 400
       y: 400
       radius: 75
-      # fill: '#DD2476'
     @circle2 = new Circle
       ctx: @ctx
       x: 600
       y: 400
       radius: 100
-      # fill: '#12FFF7'
-
-    # @circle3 = new Circle
-    #   ctx: @ctx
-    #   x: 400
-    #   y: 200
-    #   radius: 75
-    #   fill: '#222'
-    #   # fill: '#12FFF7'
-  
   gooCircles:(circle1, circle2)->
     if circle1.radius >= circle2.radius
       bigCircle = circle1
@@ -158,22 +148,29 @@ class Goo
       @ctx.strokeStyle = 'orange'
       @ctx.stroke()
     
-    dX = Math.abs circle1.x - circle2.x
-    dY = Math.abs circle1.y - circle2.y
+    dX = circle1.x - circle2.x
+    dY = circle1.y - circle2.y
 
     len = Math.sqrt Math.pow(dX, 2) + Math.pow(dY, 2)
     reactDistance = ((circle1.radius + circle2.radius)/2)
 
     distance = (1 - reactDistance/len)
+    isRadiusIntX = point1.x - point2.x < 0
+    isCirclesIntX = circle1.x - circle2.x < 0
+    isRadiusIntY = point1.y - point2.y < 0
+    isCirclesIntY = circle1.y - circle2.y < 0
+    # console.log isRadiusInt ^ isCirclesInt
+    isIntersectX = isRadiusIntX ^ isCirclesIntX
+    isIntersectY = isRadiusIntY ^ isCirclesIntY
+    isIntersect = isIntersectX or isIntersectY
+
     distance = Math.max distance, 0
 
     if @isDebug
       @ctx.beginPath()
       @ctx.arc(middlePoint.x, middlePoint.y, reactDistance, 0, 2*Math.PI, false)
       @ctx.strokeStyle = 'yellow'
-      @ctx.lineWidth = 1
       @ctx.stroke()
-      @ctx.lineWidth = .25
 
     curvePoints1 = @circleMath
       middleLine: middleLine
@@ -235,7 +232,7 @@ class Goo
 
     dx = circle.x - middleLine.center.x
     point1Angle = if dx > 0 then angle else angle+(180*@deg)
-    
+
     offset = if isSmall then 0 else 0
     absOffsetAngle = (90+(offset)+(45*dist))*@deg
     offsetAngle = if side is 'top' then absOffsetAngle else -absOffsetAngle
@@ -323,7 +320,7 @@ class Goo
     radiusOffset = 349
     # radiusOffset = 0
 
-    tween = new TWEEN.Tween({p:0}).to({p:1}, 10000)
+    tween = new TWEEN.Tween({p:0}).to({p:1}, 50000)
       .onUpdate ->
         it.ctx.clear()
         it.circle2.draw()

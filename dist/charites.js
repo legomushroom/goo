@@ -64,7 +64,8 @@ Goo = (function() {
     this.ctx = this.canvas.getContext('2d');
     this.width = parseInt(this.canvas.getAttribute('width'), 10);
     this.height = parseInt(this.canvas.getAttribute('height'), 10);
-    return this.deg = Math.PI / 180;
+    this.deg = Math.PI / 180;
+    return this.isDebug = true;
   };
 
   Goo.prototype.createCircles = function() {
@@ -83,7 +84,7 @@ Goo = (function() {
   };
 
   Goo.prototype.gooCircles = function(circle1, circle2) {
-    var angle, angleShift1, angleShift2, bigCircle, bottomCircle, curvePoints1, curvePoints2, curvePoints3, curvePoints4, dX, dY, distance, dx, dy, leftCircle, len, middleLine, middleLinePoint1, middleLinePoint2, middlePoint, point1, point2, radius, reactDistance, rightCircle, smallCircle, topCircle, x, x1, x2, x3, y, y1, y2, y3;
+    var angle, angleShift1, angleShift2, bigCircle, bottomCircle, curvePoints1, curvePoints2, curvePoints3, curvePoints4, dX, dY, distance, dx, dy, isCirclesIntX, isCirclesIntY, isIntersect, isIntersectX, isIntersectY, isRadiusIntX, isRadiusIntY, leftCircle, len, middleLine, middleLinePoint1, middleLinePoint2, middlePoint, point1, point2, radius, reactDistance, rightCircle, smallCircle, topCircle, x, x1, x2, x3, y, y1, y2, y3;
     if (circle1.radius >= circle2.radius) {
       bigCircle = circle1;
       smallCircle = circle2;
@@ -172,19 +173,24 @@ Goo = (function() {
       this.ctx.strokeStyle = 'orange';
       this.ctx.stroke();
     }
-    dX = Math.abs(circle1.x - circle2.x);
-    dY = Math.abs(circle1.y - circle2.y);
+    dX = circle1.x - circle2.x;
+    dY = circle1.y - circle2.y;
     len = Math.sqrt(Math.pow(dX, 2) + Math.pow(dY, 2));
     reactDistance = (circle1.radius + circle2.radius) / 2;
     distance = 1 - reactDistance / len;
+    isRadiusIntX = point1.x - point2.x < 0;
+    isCirclesIntX = circle1.x - circle2.x < 0;
+    isRadiusIntY = point1.y - point2.y < 0;
+    isCirclesIntY = circle1.y - circle2.y < 0;
+    isIntersectX = isRadiusIntX ^ isCirclesIntX;
+    isIntersectY = isRadiusIntY ^ isCirclesIntY;
+    isIntersect = isIntersectX || isIntersectY;
     distance = Math.max(distance, 0);
     if (this.isDebug) {
       this.ctx.beginPath();
       this.ctx.arc(middlePoint.x, middlePoint.y, reactDistance, 0, 2 * Math.PI, false);
       this.ctx.strokeStyle = 'yellow';
-      this.ctx.lineWidth = 1;
       this.ctx.stroke();
-      this.ctx.lineWidth = .25;
     }
     curvePoints1 = this.circleMath({
       middleLine: middleLine,
@@ -341,7 +347,7 @@ Goo = (function() {
       p: 0
     }).to({
       p: 1
-    }, 10000).onUpdate(function() {
+    }, 50000).onUpdate(function() {
       it.ctx.clear();
       it.circle2.draw();
       it.circle1.set({
