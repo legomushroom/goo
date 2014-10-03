@@ -137,16 +137,6 @@ class Goo
       @ctx.arc(middleLinePoint2.x, middleLinePoint2.y, 2, 0, 2*Math.PI, false)
       @ctx.fillStyle = 'orange'
       @ctx.fill()
-    middleLine =
-      start: middleLinePoint1
-      end:   middleLinePoint2
-      center: middlePoint
-    if @isDebug
-      @ctx.beginPath()
-      @ctx.moveTo(middleLine.start.x, middleLine.start.y)
-      @ctx.lineTo(middleLine.end.x, middleLine.end.y)
-      @ctx.strokeStyle = 'orange'
-      @ctx.stroke()
     
     dX = circle1.x - circle2.x
     dY = circle1.y - circle2.y
@@ -164,6 +154,33 @@ class Goo
     isIntersectY = isRadiusIntY ^ isCirclesIntY
     isIntersect = isIntersectX or isIntersectY
 
+    if isIntersect
+      intPoints = @circlesIntersecton circle2, circle1
+      middleLinePoint1 = x: intPoints[0], y: intPoints[2]
+      middleLinePoint2 = x: intPoints[1], y: intPoints[3]
+      middlePoint =
+        x: (middleLinePoint1.x - middleLinePoint2.x)/2
+        y: (middleLinePoint1.y - middleLinePoint2.y)/2
+
+      if @isDebug
+        @ctx.beginPath()
+        @ctx.arc(middleLinePoint1.x, middleLinePoint1.y, 2, 0, 2*Math.PI, false)
+        @ctx.arc(middleLinePoint2.x, middleLinePoint2.y, 2, 0, 2*Math.PI, false)
+        @ctx.fillStyle = 'deeppink'
+        @ctx.fill()
+    
+    middleLine =
+      start: middleLinePoint1
+      end:   middleLinePoint2
+      center: middlePoint
+
+    if @isDebug
+      @ctx.beginPath()
+      @ctx.moveTo(middleLine.start.x, middleLine.start.y)
+      @ctx.lineTo(middleLine.end.x, middleLine.end.y)
+      @ctx.strokeStyle = 'orange'
+      @ctx.stroke()
+
     # console.log distance
     # distance = Math.max distance, 0
 
@@ -180,6 +197,8 @@ class Goo
       distance:   distance
       isSmall: true
       isIntersect: isIntersect
+
+    if !curvePoints1 then return
 
     curvePoints2 = @circleMath
       middleLine: middleLine
@@ -236,13 +255,17 @@ class Goo
     side = o.side; dist = o.distance; isSmall = o.isSmall
     isInt = o.isIntersect
 
+    if isInt then return
+
     dx = circle.x - middleLine.center.x
     point1Angle = if dx > 0 then angle else angle+(180*@deg)
 
-
-
-    offset = if isInt and isSmall and dist < 0
-      35*(Math.max dist, -1)
+    offset = if isInt and dist < 0
+      0
+      # if isSmall
+      #   35*(Math.max dist, -1)
+      # else
+      #   -35*(Math.max dist, -1)
     else 0
     handlesAngle = if dist > 0 then 45*dist else 0
     absOffsetAngle = (90+(offset)+(handlesAngle))*@deg
@@ -321,6 +344,59 @@ class Goo
     result.onLine2 = true  if b > 0 and b < 1
     
     result
+
+  circlesIntersecton: (circle1, circle2) ->
+    x0 = circle1.x; y0 = circle1.y; r0 = circle1.radius
+    x1 = circle2.x; y1 = circle2.y; r1 = circle2.radius
+    # dx and dy are the vertical and horizontal distances between
+    #   * the circle centers.
+
+    dx = x1 - x0
+    dy = y1 - y0
+    
+    # Determine the straight-line distance between the centers.
+    d = Math.sqrt((dy * dy) + (dx * dx))
+    
+    # Check for solvability.
+    
+    # no solution. circles do not intersect.
+    return false  if d > (r0 + r1)
+    
+    # no solution. one circle is contained in the other
+    return false  if d < Math.abs(r0 - r1)
+    
+    # 'point 2' is the point where the line through the circle
+    #   * intersection points crosses the line between the circle
+    #   * centers.
+    
+    # Determine the distance from point 0 to point 2.
+    a = ((r0 * r0) - (r1 * r1) + (d * d)) / (2.0 * d)
+    
+    # Determine the coordinates of point 2.
+    x2 = x0 + (dx * a / d)
+    y2 = y0 + (dy * a / d)
+    
+    # Determine the distance from point 2 to either of the
+    #   * intersection points.
+    h = Math.sqrt((r0 * r0) - (a * a))
+    
+    # Now determine the offsets of the intersection points from
+    #   * point 2.
+
+    rx = -dy * (h / d)
+    ry = dx * (h / d)
+    
+    # Determine the absolute intersection points.
+    xi = x2 + rx
+    xi_prime = x2 - rx
+    yi = y2 + ry
+    yi_prime = y2 - ry
+    [
+      xi
+      xi_prime
+      yi
+      yi_prime
+    ]
 
   run:->
     it = @

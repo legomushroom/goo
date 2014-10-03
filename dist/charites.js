@@ -84,7 +84,7 @@ Goo = (function() {
   };
 
   Goo.prototype.gooCircles = function(circle1, circle2) {
-    var angle, angleShift1, angleShift2, bigCircle, bottomCircle, curvePoints1, curvePoints2, curvePoints3, curvePoints4, dX, dY, distance, dx, dy, isCirclesIntX, isCirclesIntY, isIntersect, isIntersectX, isIntersectY, isRadiusIntX, isRadiusIntY, leftCircle, len, middleLine, middleLinePoint1, middleLinePoint2, middlePoint, point1, point2, radius, reactDistance, rightCircle, smallCircle, topCircle, x, x1, x2, x3, y, y1, y2, y3;
+    var angle, angleShift1, angleShift2, bigCircle, bottomCircle, curvePoints1, curvePoints2, curvePoints3, curvePoints4, dX, dY, distance, dx, dy, intPoints, isCirclesIntX, isCirclesIntY, isIntersect, isIntersectX, isIntersectY, isRadiusIntX, isRadiusIntY, leftCircle, len, middleLine, middleLinePoint1, middleLinePoint2, middlePoint, point1, point2, radius, reactDistance, rightCircle, smallCircle, topCircle, x, x1, x2, x3, y, y1, y2, y3;
     if (circle1.radius >= circle2.radius) {
       bigCircle = circle1;
       smallCircle = circle2;
@@ -161,18 +161,6 @@ Goo = (function() {
       this.ctx.fillStyle = 'orange';
       this.ctx.fill();
     }
-    middleLine = {
-      start: middleLinePoint1,
-      end: middleLinePoint2,
-      center: middlePoint
-    };
-    if (this.isDebug) {
-      this.ctx.beginPath();
-      this.ctx.moveTo(middleLine.start.x, middleLine.start.y);
-      this.ctx.lineTo(middleLine.end.x, middleLine.end.y);
-      this.ctx.strokeStyle = 'orange';
-      this.ctx.stroke();
-    }
     dX = circle1.x - circle2.x;
     dY = circle1.y - circle2.y;
     len = Math.sqrt(Math.pow(dX, 2) + Math.pow(dY, 2));
@@ -185,6 +173,40 @@ Goo = (function() {
     isIntersectX = isRadiusIntX ^ isCirclesIntX;
     isIntersectY = isRadiusIntY ^ isCirclesIntY;
     isIntersect = isIntersectX || isIntersectY;
+    if (isIntersect) {
+      intPoints = this.circlesIntersecton(circle2, circle1);
+      middleLinePoint1 = {
+        x: intPoints[0],
+        y: intPoints[2]
+      };
+      middleLinePoint2 = {
+        x: intPoints[1],
+        y: intPoints[3]
+      };
+      middlePoint = {
+        x: (middleLinePoint1.x - middleLinePoint2.x) / 2,
+        y: (middleLinePoint1.y - middleLinePoint2.y) / 2
+      };
+      if (this.isDebug) {
+        this.ctx.beginPath();
+        this.ctx.arc(middleLinePoint1.x, middleLinePoint1.y, 2, 0, 2 * Math.PI, false);
+        this.ctx.arc(middleLinePoint2.x, middleLinePoint2.y, 2, 0, 2 * Math.PI, false);
+        this.ctx.fillStyle = 'deeppink';
+        this.ctx.fill();
+      }
+    }
+    middleLine = {
+      start: middleLinePoint1,
+      end: middleLinePoint2,
+      center: middlePoint
+    };
+    if (this.isDebug) {
+      this.ctx.beginPath();
+      this.ctx.moveTo(middleLine.start.x, middleLine.start.y);
+      this.ctx.lineTo(middleLine.end.x, middleLine.end.y);
+      this.ctx.strokeStyle = 'orange';
+      this.ctx.stroke();
+    }
     if (this.isDebug) {
       this.ctx.beginPath();
       this.ctx.arc(middlePoint.x, middlePoint.y, reactDistance, 0, 2 * Math.PI, false);
@@ -199,6 +221,9 @@ Goo = (function() {
       isSmall: true,
       isIntersect: isIntersect
     });
+    if (!curvePoints1) {
+      return;
+    }
     curvePoints2 = this.circleMath({
       middleLine: middleLine,
       circle: circle1,
@@ -257,9 +282,12 @@ Goo = (function() {
     dist = o.distance;
     isSmall = o.isSmall;
     isInt = o.isIntersect;
+    if (isInt) {
+      return;
+    }
     dx = circle.x - middleLine.center.x;
     point1Angle = dx > 0 ? angle : angle + (180 * this.deg);
-    offset = isInt && isSmall && dist < 0 ? 35 * (Math.max(dist, -1)) : 0;
+    offset = isInt && dist < 0 ? 0 : 0;
     handlesAngle = dist > 0 ? 45 * dist : 0;
     absOffsetAngle = (90 + offset + handlesAngle) * this.deg;
     offsetAngle = side === 'top' ? absOffsetAngle : -absOffsetAngle;
@@ -338,6 +366,36 @@ Goo = (function() {
       result.onLine2 = true;
     }
     return result;
+  };
+
+  Goo.prototype.circlesIntersecton = function(circle1, circle2) {
+    var a, d, dx, dy, r0, r1, rx, ry, x0, x1, x2, xi, xi_prime, y0, y1, y2, yi, yi_prime;
+    x0 = circle1.x;
+    y0 = circle1.y;
+    r0 = circle1.radius;
+    x1 = circle2.x;
+    y1 = circle2.y;
+    r1 = circle2.radius;
+    dx = x1 - x0;
+    dy = y1 - y0;
+    d = Math.sqrt((dy * dy) + (dx * dx));
+    if (d > (r0 + r1)) {
+      return false;
+    }
+    if (d < Math.abs(r0 - r1)) {
+      return false;
+    }
+    a = ((r0 * r0) - (r1 * r1) + (d * d)) / (2.0 * d);
+    x2 = x0 + (dx * a / d);
+    y2 = y0 + (dy * a / d);
+    h = Math.sqrt((r0 * r0) - (a * a));
+    rx = -dy * (h / d);
+    ry = dx * (h / d);
+    xi = x2 + rx;
+    xi_prime = x2 - rx;
+    yi = y2 + ry;
+    yi_prime = y2 - ry;
+    return [xi, xi_prime, yi, yi_prime];
   };
 
   Goo.prototype.run = function() {
