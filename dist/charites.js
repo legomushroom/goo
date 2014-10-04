@@ -64,8 +64,7 @@ Goo = (function() {
     this.ctx = this.canvas.getContext('2d');
     this.width = parseInt(this.canvas.getAttribute('width'), 10);
     this.height = parseInt(this.canvas.getAttribute('height'), 10);
-    this.deg = Math.PI / 180;
-    return this.isDebug = true;
+    return this.deg = Math.PI / 180;
   };
 
   Goo.prototype.createCircles = function() {
@@ -219,19 +218,14 @@ Goo = (function() {
       circle: circle1,
       angle: angle,
       distance: distance,
-      isSmall: true,
       isIntersect: isIntersect
     });
-    if (!curvePoints1) {
-      return;
-    }
     curvePoints2 = this.circleMath({
       middleLine: middleLine,
       circle: circle1,
       angle: angle,
       side: 'top',
       distance: distance,
-      isSmall: true,
       isIntersect: isIntersect
     });
     curvePoints3 = this.circleMath({
@@ -239,7 +233,8 @@ Goo = (function() {
       circle: circle2,
       angle: angle,
       distance: distance,
-      isIntersect: isIntersect
+      isIntersect: isIntersect,
+      isRight: true
     });
     curvePoints4 = this.circleMath({
       middleLine: middleLine,
@@ -247,35 +242,59 @@ Goo = (function() {
       angle: angle,
       side: 'top',
       distance: distance,
-      isIntersect: isIntersect
+      isIntersect: isIntersect,
+      isRight: true
     });
     if (reactDistance < radius) {
       return;
     }
-    this.ctx.beginPath();
-    this.ctx.moveTo(curvePoints1.circlePoint.x, curvePoints1.circlePoint.y);
-    x1 = curvePoints1.handlePoint.x;
-    y1 = curvePoints1.handlePoint.y;
-    x2 = curvePoints4.handlePoint.x;
-    y2 = curvePoints4.handlePoint.y;
-    x3 = curvePoints4.circlePoint.x;
-    y3 = curvePoints4.circlePoint.y;
-    this.ctx.bezierCurveTo(x1, y1, x2, y2, x3, y3);
-    this.ctx.lineTo(curvePoints3.circlePoint.x, curvePoints3.circlePoint.y);
-    x1 = curvePoints3.handlePoint.x;
-    y1 = curvePoints3.handlePoint.y;
-    x2 = curvePoints2.handlePoint.x;
-    y2 = curvePoints2.handlePoint.y;
-    x3 = curvePoints2.circlePoint.x;
-    y3 = curvePoints2.circlePoint.y;
-    this.ctx.bezierCurveTo(x1, y1, x2, y2, x3, y3);
-    this.ctx.closePath();
-    this.ctx.fillStyle = this.isDebug ? "rgba(255, 255, 255, 0.5)" : '#999';
-    return this.ctx.fill();
+    if (!isIntersect) {
+      this.ctx.beginPath();
+      this.ctx.moveTo(curvePoints1.circlePoint.x, curvePoints1.circlePoint.y);
+      x1 = curvePoints1.handlePoint.x;
+      y1 = curvePoints1.handlePoint.y;
+      x2 = curvePoints4.handlePoint.x;
+      y2 = curvePoints4.handlePoint.y;
+      x3 = curvePoints4.circlePoint.x;
+      y3 = curvePoints4.circlePoint.y;
+      this.ctx.bezierCurveTo(x1, y1, x2, y2, x3, y3);
+      this.ctx.lineTo(curvePoints3.circlePoint.x, curvePoints3.circlePoint.y);
+      x1 = curvePoints3.handlePoint.x;
+      y1 = curvePoints3.handlePoint.y;
+      x2 = curvePoints2.handlePoint.x;
+      y2 = curvePoints2.handlePoint.y;
+      x3 = curvePoints2.circlePoint.x;
+      y3 = curvePoints2.circlePoint.y;
+      this.ctx.bezierCurveTo(x1, y1, x2, y2, x3, y3);
+      this.ctx.closePath();
+      this.ctx.fillStyle = this.isDebug ? "rgba(255, 255, 255, 0.5)" : '#999';
+      return this.ctx.fill();
+    } else {
+      this.ctx.beginPath();
+      this.ctx.moveTo(curvePoints1.circlePoint.x, curvePoints1.circlePoint.y);
+      x1 = curvePoints1.handlePoint.x;
+      y1 = curvePoints1.handlePoint.y;
+      x2 = curvePoints3.handlePoint.x;
+      y2 = curvePoints3.handlePoint.y;
+      x3 = curvePoints3.circlePoint.x;
+      y3 = curvePoints3.circlePoint.y;
+      this.ctx.bezierCurveTo(x1, y1, x2, y2, x3, y3);
+      this.ctx.lineTo(curvePoints4.circlePoint.x, curvePoints4.circlePoint.y);
+      x1 = curvePoints4.handlePoint.x;
+      y1 = curvePoints4.handlePoint.y;
+      x2 = curvePoints2.handlePoint.x;
+      y2 = curvePoints2.handlePoint.y;
+      x3 = curvePoints2.circlePoint.x;
+      y3 = curvePoints2.circlePoint.y;
+      this.ctx.bezierCurveTo(x1, y1, x2, y2, x3, y3);
+      this.ctx.closePath();
+      this.ctx.fillStyle = this.isDebug ? "rgba(255, 255, 255, 0.5)" : '#999';
+      return this.ctx.fill();
+    }
   };
 
   Goo.prototype.circleMath = function(o) {
-    var absOffsetAngle, angle, circle, dist, dx, dy, handlesAngle, intPoint, intersectAngle, isInt, isSmall, line1, middleLine, offset, offsetAngle, point1, point11, point1Angle, side, x, y;
+    var absOffsetAngle, angle, angleOffset, circle, dist, dx, dy, handlesAngle, intPoint, intersectAngle, isInt, isRight, isSmall, line1, middleLine, offset, offsetAngle, point, point1, point11, point1Angle, side, x, y;
     circle = o.circle;
     angle = o.angle;
     middleLine = o.middleLine;
@@ -283,6 +302,7 @@ Goo = (function() {
     dist = o.distance;
     isSmall = o.isSmall;
     isInt = o.isIntersect;
+    isRight = o.isRight;
     if (!isInt) {
       dx = circle.x - middleLine.center.x;
       point1Angle = dx > 0 ? angle : angle + (180 * this.deg);
@@ -340,17 +360,70 @@ Goo = (function() {
         }
       };
     } else {
-      y = middleLine.end.y - circle.y;
-      x = circle.x - middleLine.end.x;
+      angle = 15 * this.deg;
+      if (side === 'top') {
+        point = middleLine.start;
+        angleOffset = angle;
+      } else {
+        point = middleLine.end;
+        angleOffset = -angle;
+      }
+      if (isRight) {
+        angleOffset = -angleOffset;
+      }
+      y = point.y - circle.y;
+      x = circle.x - point.x;
       angle = Math.atan2(y, x);
+      point1Angle = angle + angleOffset - (180 * this.deg);
+      point1 = {
+        x: circle.x + Math.cos(point1Angle) * circle.radius,
+        y: circle.y + Math.sin(point1Angle) * circle.radius
+      };
+      point11 = {
+        x: circle.x + Math.cos(1.01 * point1Angle) * circle.radius,
+        y: circle.y + Math.sin(1.01 * point1Angle) * circle.radius
+      };
+      dx = point1.x - point11.x;
+      dy = point1.y - point11.y;
+      intersectAngle = middleLine.center.x - point1.x > 0 ? Math.atan(dy / dx) : Math.atan(dy / dx) + 180 * this.deg;
+      line1 = {
+        start: point1,
+        end: point11
+      };
+      intPoint = this.intersection(line1, middleLine);
       if (this.isDebug) {
         this.ctx.beginPath();
-        x = circle.x + Math.cos(angle - (25 * this.deg) - (180 * this.deg)) * circle.radius;
-        y = circle.y + Math.sin(angle - (25 * this.deg) - (180 * this.deg)) * circle.radius;
-        this.ctx.arc(x, y, 2, 0, 2 * Math.PI, false);
+        this.ctx.arc(circle.x, circle.y, 2, 0, 2 * Math.PI, false);
+        this.ctx.fillStyle = 'cyan';
+        this.ctx.fill();
+        this.ctx.beginPath();
+        this.ctx.arc(intPoint.x, intPoint.y, 2, 0, 2 * Math.PI, false);
         this.ctx.fillStyle = 'yellow';
-        return this.ctx.fill();
+        this.ctx.fill();
+        this.ctx.beginPath();
+        this.ctx.arc(point1.x, point1.y, 2, 0, 2 * Math.PI, false);
+        this.ctx.fillStyle = 'cyan';
+        this.ctx.fill();
+        this.ctx.beginPath();
+        this.ctx.arc(point11.x, point11.y, 1, 0, 2 * Math.PI, false);
+        this.ctx.fillStyle = 'cyan';
+        this.ctx.fill();
+        this.ctx.beginPath();
+        this.ctx.moveTo(point1.x, point1.y);
+        this.ctx.lineTo(intPoint.x, intPoint.y);
+        this.ctx.strokeStyle = 'yellow';
+        this.ctx.stroke();
       }
+      return {
+        handlePoint: {
+          x: intPoint.x,
+          y: intPoint.y
+        },
+        circlePoint: {
+          x: point1.x,
+          y: point1.y
+        }
+      };
     }
   };
 

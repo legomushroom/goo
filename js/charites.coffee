@@ -46,7 +46,7 @@ class Goo
     @width  = parseInt(@canvas.getAttribute('width'), 10)
     @height = parseInt(@canvas.getAttribute('height'), 10)
     @deg = Math.PI/180
-    @isDebug = true
+    # @isDebug = true
 
   createCircles:->
     @circle1 = new Circle
@@ -223,10 +223,7 @@ class Goo
       circle:     circle1
       angle:      angle
       distance:   distance
-      isSmall: true
       isIntersect: isIntersect
-
-    if !curvePoints1 then return
 
     curvePoints2 = @circleMath
       middleLine: middleLine
@@ -234,7 +231,6 @@ class Goo
       angle:      angle
       side:       'top'
       distance:   distance
-      isSmall: true
       isIntersect: isIntersect
 
     curvePoints3 = @circleMath
@@ -243,6 +239,7 @@ class Goo
       angle:      angle
       distance:   distance
       isIntersect: isIntersect
+      isRight: true
 
     curvePoints4 = @circleMath
       middleLine: middleLine
@@ -251,37 +248,63 @@ class Goo
       side:       'top'
       distance:   distance
       isIntersect: isIntersect
+      isRight: true
     
     if reactDistance < radius then return
-      
-    @ctx.beginPath()
-    @ctx.moveTo(curvePoints1.circlePoint.x,curvePoints1.circlePoint.y)
-    x1 = curvePoints1.handlePoint.x
-    y1 = curvePoints1.handlePoint.y
-    x2 = curvePoints4.handlePoint.x
-    y2 = curvePoints4.handlePoint.y
-    x3 = curvePoints4.circlePoint.x
-    y3 = curvePoints4.circlePoint.y
-    @ctx.bezierCurveTo(x1,y1,x2,y2,x3,y3)
 
-    @ctx.lineTo(curvePoints3.circlePoint.x,curvePoints3.circlePoint.y)
-    x1 = curvePoints3.handlePoint.x
-    y1 = curvePoints3.handlePoint.y
-    x2 = curvePoints2.handlePoint.x
-    y2 = curvePoints2.handlePoint.y
-    x3 = curvePoints2.circlePoint.x
-    y3 = curvePoints2.circlePoint.y
-    @ctx.bezierCurveTo(x1,y1,x2,y2,x3,y3)
-    @ctx.closePath()
 
-    @ctx.fillStyle = if @isDebug then "rgba(255, 255, 255, 0.5)" else '#999'
-    @ctx.fill()
+    if !isIntersect
+      @ctx.beginPath()
+      @ctx.moveTo(curvePoints1.circlePoint.x,curvePoints1.circlePoint.y)
+      x1 = curvePoints1.handlePoint.x
+      y1 = curvePoints1.handlePoint.y
+      x2 = curvePoints4.handlePoint.x
+      y2 = curvePoints4.handlePoint.y
+      x3 = curvePoints4.circlePoint.x
+      y3 = curvePoints4.circlePoint.y
+      @ctx.bezierCurveTo(x1,y1,x2,y2,x3,y3)
+
+      @ctx.lineTo(curvePoints3.circlePoint.x,curvePoints3.circlePoint.y)
+      x1 = curvePoints3.handlePoint.x
+      y1 = curvePoints3.handlePoint.y
+      x2 = curvePoints2.handlePoint.x
+      y2 = curvePoints2.handlePoint.y
+      x3 = curvePoints2.circlePoint.x
+      y3 = curvePoints2.circlePoint.y
+      @ctx.bezierCurveTo(x1,y1,x2,y2,x3,y3)
+      @ctx.closePath()
+
+      @ctx.fillStyle = if @isDebug then "rgba(255, 255, 255, 0.5)" else '#999'
+      @ctx.fill()
+    else
+      @ctx.beginPath()
+      @ctx.moveTo(curvePoints1.circlePoint.x,curvePoints1.circlePoint.y)
+      x1 = curvePoints1.handlePoint.x
+      y1 = curvePoints1.handlePoint.y
+      x2 = curvePoints3.handlePoint.x
+      y2 = curvePoints3.handlePoint.y
+      x3 = curvePoints3.circlePoint.x
+      y3 = curvePoints3.circlePoint.y
+      @ctx.bezierCurveTo(x1,y1,x2,y2,x3,y3)
+
+      @ctx.lineTo(curvePoints4.circlePoint.x,curvePoints4.circlePoint.y)
+      x1 = curvePoints4.handlePoint.x
+      y1 = curvePoints4.handlePoint.y
+      x2 = curvePoints2.handlePoint.x
+      y2 = curvePoints2.handlePoint.y
+      x3 = curvePoints2.circlePoint.x
+      y3 = curvePoints2.circlePoint.y
+      @ctx.bezierCurveTo(x1,y1,x2,y2,x3,y3)
+      @ctx.closePath()
+
+      @ctx.fillStyle = if @isDebug then "rgba(255, 255, 255, 0.5)" else '#999'
+      @ctx.fill()
 
 
   circleMath:(o)->
     circle = o.circle; angle  = o.angle; middleLine = o.middleLine
     side = o.side; dist = o.distance; isSmall = o.isSmall
-    isInt = o.isIntersect
+    isInt = o.isIntersect; isRight = o.isRight
 
     if !isInt
       dx = circle.x - middleLine.center.x
@@ -343,40 +366,71 @@ class Goo
         circlePoint: x: point1.x, y: point1.y
       }
     else
-      y = middleLine.end.y - circle.y
-      x = circle.x - middleLine.end.x
+      angle = 15*@deg
+      if side is 'top'
+        point = middleLine.start
+        angleOffset = angle
+      else
+        point = middleLine.end
+        angleOffset = -angle
+
+      if isRight then angleOffset = -angleOffset
+
+      y = point.y - circle.y
+      x = circle.x - point.x
       angle = Math.atan2 y, x
+
+      point1Angle = angle+angleOffset-(180*@deg)
+      point1 =
+        x: circle.x + Math.cos(point1Angle)*circle.radius
+        y: circle.y + Math.sin(point1Angle)*circle.radius
+
+      point11 =
+        x: circle.x + Math.cos(1.01*point1Angle)*circle.radius
+        y: circle.y + Math.sin(1.01*point1Angle)*circle.radius
+
+      dx = point1.x - point11.x
+      dy = point1.y - point11.y
+      intersectAngle = if middleLine.center.x - point1.x > 0
+        Math.atan dy/dx
+      else Math.atan(dy/dx) + 180*@deg
+
+      line1 =
+        start: point1
+        end:   point11
+      intPoint = @intersection line1, middleLine
 
       if @isDebug
         @ctx.beginPath()
-        x = circle.x + Math.cos(angle-(25*@deg)-(180*@deg))*circle.radius
-        y = circle.y + Math.sin(angle-(25*@deg)-(180*@deg))*circle.radius
-        @ctx.arc(x, y, 2, 0, 2*Math.PI, false)
+        @ctx.arc(circle.x, circle.y, 2, 0, 2*Math.PI, false)
+        @ctx.fillStyle = 'cyan'
+        @ctx.fill()
+
+        @ctx.beginPath()
+        @ctx.arc(intPoint.x, intPoint.y, 2, 0, 2*Math.PI, false)
         @ctx.fillStyle = 'yellow'
         @ctx.fill()
-      # point1 =
-      #   x: circle.x + Math.cos(point1Angle+offsetAngle)*circle.radius
-      #   y: circle.y + Math.sin(point1Angle+offsetAngle)*circle.radius
 
-      # point11 =
-      #   x: circle.x + Math.cos(point1Angle+(1.01*offsetAngle))*circle.radius
-      #   y: circle.y + Math.sin(point1Angle+(1.01*offsetAngle))*circle.radius
+        @ctx.beginPath()
+        @ctx.arc(point1.x, point1.y, 2, 0, 2*Math.PI, false)
+        @ctx.fillStyle = 'cyan'
+        @ctx.fill()
 
-      # dx = point1.x - point11.x
-      # dy = point1.y - point11.y
-      # intersectAngle = if middleLine.center.x - point1.x > 0
-      #   Math.atan dy/dx
-      # else Math.atan(dy/dx) + 180*@deg
+        @ctx.beginPath()
+        @ctx.arc(point11.x, point11.y, 1, 0, 2*Math.PI, false)
+        @ctx.fillStyle = 'cyan'
+        @ctx.fill()
 
-      # line1 =
-      #   start: point1
-      #   end:   point11
-      # intPoint = @intersection line1, middleLine
+        @ctx.beginPath()
+        @ctx.moveTo(point1.x, point1.y)
+        @ctx.lineTo(intPoint.x, intPoint.y)
+        @ctx.strokeStyle = 'yellow'
+        @ctx.stroke()
 
-      # return {
-      #   handlePoint: x: intPoint.x, y: intPoint.y
-      #   circlePoint: x: point1.x, y: point1.y
-      # }
+      return {
+        handlePoint: x: intPoint.x, y: intPoint.y
+        circlePoint: x: point1.x, y: point1.y
+      }
 
 
   intersection:(line1, line2)->
