@@ -113,7 +113,6 @@ class Goo
       @ctx.fillStyle = 'cyan'
       @ctx.fill()
     #   find middle circle radius
-    #   not necessary but nice
     dx = Math.abs point1.x - point2.x
     dy = Math.abs point1.y - point2.y
     radius = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2))/2
@@ -158,9 +157,10 @@ class Goo
       intPoints = @circlesIntersecton circle2, circle1
       middleLinePoint1 = x: intPoints[0], y: intPoints[2]
       middleLinePoint2 = x: intPoints[1], y: intPoints[3]
+
       middlePoint =
-        x: (middleLinePoint1.x - middleLinePoint2.x)/2
-        y: (middleLinePoint1.y - middleLinePoint2.y)/2
+        x: (middleLinePoint1.x + middleLinePoint2.x)/2
+        y: (middleLinePoint1.y + middleLinePoint2.y)/2
 
       if @isDebug
         @ctx.beginPath()
@@ -255,72 +255,90 @@ class Goo
     side = o.side; dist = o.distance; isSmall = o.isSmall
     isInt = o.isIntersect
 
-    if isInt then return
+    if !isInt
+      dx = circle.x - middleLine.center.x
+      point1Angle = if dx > 0 then angle else angle+(180*@deg)
+      offset = 0
+      handlesAngle = if dist > 0 then 45*dist else 0
 
-    dx = circle.x - middleLine.center.x
-    point1Angle = if dx > 0 then angle else angle+(180*@deg)
+      absOffsetAngle = (90+(offset)+(handlesAngle))*@deg
+      offsetAngle = if side is 'top' then absOffsetAngle else -absOffsetAngle
 
-    offset = if isInt and dist < 0
-      0
-      # if isSmall
-      #   35*(Math.max dist, -1)
-      # else
-      #   -35*(Math.max dist, -1)
-    else 0
-    handlesAngle = if dist > 0 then 45*dist else 0
-    absOffsetAngle = (90+(offset)+(handlesAngle))*@deg
-    offsetAngle = if side is 'top' then absOffsetAngle else -absOffsetAngle
+      point1 =
+        x: circle.x + Math.cos(point1Angle+offsetAngle)*circle.radius
+        y: circle.y + Math.sin(point1Angle+offsetAngle)*circle.radius
 
-    point1 =
-      x: circle.x + Math.cos(point1Angle+offsetAngle)*circle.radius
-      y: circle.y + Math.sin(point1Angle+offsetAngle)*circle.radius
+      point11 =
+        x: circle.x + Math.cos(point1Angle+(1.01*offsetAngle))*circle.radius
+        y: circle.y + Math.sin(point1Angle+(1.01*offsetAngle))*circle.radius
 
-    point11 =
-      x: circle.x + Math.cos(point1Angle+(1.01*offsetAngle))*circle.radius
-      y: circle.y + Math.sin(point1Angle+(1.01*offsetAngle))*circle.radius
+      dx = point1.x - point11.x
+      dy = point1.y - point11.y
+      intersectAngle = if middleLine.center.x - point1.x > 0
+        Math.atan dy/dx
+      else Math.atan(dy/dx) + 180*@deg
 
-    dx = point1.x - point11.x
-    dy = point1.y - point11.y
-    intersectAngle = if middleLine.center.x - point1.x > 0
-      Math.atan dy/dx
-    else Math.atan(dy/dx) + 180*@deg
+      line1 =
+        start: point1
+        end:   point11
+      intPoint = @intersection line1, middleLine
 
-    line1 =
-      start: point1
-      end:   point11
-    intPoint = @intersection line1, middleLine
+      if @isDebug
+        @ctx.beginPath()
+        @ctx.arc(circle.x, circle.y, 2, 0, 2*Math.PI, false)
+        @ctx.fillStyle = 'cyan'
+        @ctx.fill()
 
-    if @isDebug
-      @ctx.beginPath()
-      @ctx.arc(circle.x, circle.y, 2, 0, 2*Math.PI, false)
-      @ctx.fillStyle = 'cyan'
-      @ctx.fill()
+        @ctx.beginPath()
+        @ctx.arc(intPoint.x, intPoint.y, 2, 0, 2*Math.PI, false)
+        @ctx.fillStyle = 'yellow'
+        @ctx.fill()
 
-      @ctx.beginPath()
-      @ctx.arc(intPoint.x, intPoint.y, 2, 0, 2*Math.PI, false)
-      @ctx.fillStyle = 'yellow'
-      @ctx.fill()
+        @ctx.beginPath()
+        @ctx.arc(point1.x, point1.y, 2, 0, 2*Math.PI, false)
+        @ctx.fillStyle = 'cyan'
+        @ctx.fill()
 
-      @ctx.beginPath()
-      @ctx.arc(point1.x, point1.y, 2, 0, 2*Math.PI, false)
-      @ctx.fillStyle = 'cyan'
-      @ctx.fill()
+        @ctx.beginPath()
+        @ctx.arc(point11.x, point11.y, 1, 0, 2*Math.PI, false)
+        @ctx.fillStyle = 'cyan'
+        @ctx.fill()
 
-      @ctx.beginPath()
-      @ctx.arc(point11.x, point11.y, 1, 0, 2*Math.PI, false)
-      @ctx.fillStyle = 'cyan'
-      @ctx.fill()
+        @ctx.beginPath()
+        @ctx.moveTo(point1.x, point1.y)
+        @ctx.lineTo(intPoint.x, intPoint.y)
+        @ctx.strokeStyle = 'yellow'
+        @ctx.stroke()
 
-      @ctx.beginPath()
-      @ctx.moveTo(point1.x, point1.y)
-      @ctx.lineTo(intPoint.x, intPoint.y)
-      @ctx.strokeStyle = 'yellow'
-      @ctx.stroke()
+      return {
+        handlePoint: x: intPoint.x, y: intPoint.y
+        circlePoint: x: point1.x, y: point1.y
+      }
+    else
+      # point1 =
+      #   x: circle.x + Math.cos(point1Angle+offsetAngle)*circle.radius
+      #   y: circle.y + Math.sin(point1Angle+offsetAngle)*circle.radius
 
-    {
-      handlePoint: x: intPoint.x, y: intPoint.y
-      circlePoint: x: point1.x, y: point1.y
-    }
+      # point11 =
+      #   x: circle.x + Math.cos(point1Angle+(1.01*offsetAngle))*circle.radius
+      #   y: circle.y + Math.sin(point1Angle+(1.01*offsetAngle))*circle.radius
+
+      # dx = point1.x - point11.x
+      # dy = point1.y - point11.y
+      # intersectAngle = if middleLine.center.x - point1.x > 0
+      #   Math.atan dy/dx
+      # else Math.atan(dy/dx) + 180*@deg
+
+      # line1 =
+      #   start: point1
+      #   end:   point11
+      # intPoint = @intersection line1, middleLine
+
+      # return {
+      #   handlePoint: x: intPoint.x, y: intPoint.y
+      #   circlePoint: x: point1.x, y: point1.y
+      # }
+
 
   intersection:(line1, line2)->
     result = {}

@@ -184,8 +184,8 @@ Goo = (function() {
         y: intPoints[3]
       };
       middlePoint = {
-        x: (middleLinePoint1.x - middleLinePoint2.x) / 2,
-        y: (middleLinePoint1.y - middleLinePoint2.y) / 2
+        x: (middleLinePoint1.x + middleLinePoint2.x) / 2,
+        y: (middleLinePoint1.y + middleLinePoint2.y) / 2
       };
       if (this.isDebug) {
         this.ctx.beginPath();
@@ -282,64 +282,65 @@ Goo = (function() {
     dist = o.distance;
     isSmall = o.isSmall;
     isInt = o.isIntersect;
-    if (isInt) {
-      return;
-    }
-    dx = circle.x - middleLine.center.x;
-    point1Angle = dx > 0 ? angle : angle + (180 * this.deg);
-    offset = isInt && dist < 0 ? 0 : 0;
-    handlesAngle = dist > 0 ? 45 * dist : 0;
-    absOffsetAngle = (90 + offset + handlesAngle) * this.deg;
-    offsetAngle = side === 'top' ? absOffsetAngle : -absOffsetAngle;
-    point1 = {
-      x: circle.x + Math.cos(point1Angle + offsetAngle) * circle.radius,
-      y: circle.y + Math.sin(point1Angle + offsetAngle) * circle.radius
-    };
-    point11 = {
-      x: circle.x + Math.cos(point1Angle + (1.01 * offsetAngle)) * circle.radius,
-      y: circle.y + Math.sin(point1Angle + (1.01 * offsetAngle)) * circle.radius
-    };
-    dx = point1.x - point11.x;
-    dy = point1.y - point11.y;
-    intersectAngle = middleLine.center.x - point1.x > 0 ? Math.atan(dy / dx) : Math.atan(dy / dx) + 180 * this.deg;
-    line1 = {
-      start: point1,
-      end: point11
-    };
-    intPoint = this.intersection(line1, middleLine);
-    if (this.isDebug) {
-      this.ctx.beginPath();
-      this.ctx.arc(circle.x, circle.y, 2, 0, 2 * Math.PI, false);
-      this.ctx.fillStyle = 'cyan';
-      this.ctx.fill();
-      this.ctx.beginPath();
-      this.ctx.arc(intPoint.x, intPoint.y, 2, 0, 2 * Math.PI, false);
-      this.ctx.fillStyle = 'yellow';
-      this.ctx.fill();
-      this.ctx.beginPath();
-      this.ctx.arc(point1.x, point1.y, 2, 0, 2 * Math.PI, false);
-      this.ctx.fillStyle = 'cyan';
-      this.ctx.fill();
-      this.ctx.beginPath();
-      this.ctx.arc(point11.x, point11.y, 1, 0, 2 * Math.PI, false);
-      this.ctx.fillStyle = 'cyan';
-      this.ctx.fill();
-      this.ctx.beginPath();
-      this.ctx.moveTo(point1.x, point1.y);
-      this.ctx.lineTo(intPoint.x, intPoint.y);
-      this.ctx.strokeStyle = 'yellow';
-      this.ctx.stroke();
-    }
-    return {
-      handlePoint: {
-        x: intPoint.x,
-        y: intPoint.y
-      },
-      circlePoint: {
-        x: point1.x,
-        y: point1.y
+    if (!isInt) {
+      dx = circle.x - middleLine.center.x;
+      point1Angle = dx > 0 ? angle : angle + (180 * this.deg);
+      offset = 0;
+      handlesAngle = dist > 0 ? 45 * dist : 0;
+      absOffsetAngle = (90 + offset + handlesAngle) * this.deg;
+      offsetAngle = side === 'top' ? absOffsetAngle : -absOffsetAngle;
+      point1 = {
+        x: circle.x + Math.cos(point1Angle + offsetAngle) * circle.radius,
+        y: circle.y + Math.sin(point1Angle + offsetAngle) * circle.radius
+      };
+      point11 = {
+        x: circle.x + Math.cos(point1Angle + (1.01 * offsetAngle)) * circle.radius,
+        y: circle.y + Math.sin(point1Angle + (1.01 * offsetAngle)) * circle.radius
+      };
+      dx = point1.x - point11.x;
+      dy = point1.y - point11.y;
+      intersectAngle = middleLine.center.x - point1.x > 0 ? Math.atan(dy / dx) : Math.atan(dy / dx) + 180 * this.deg;
+      line1 = {
+        start: point1,
+        end: point11
+      };
+      intPoint = this.intersection(line1, middleLine);
+      if (this.isDebug) {
+        this.ctx.beginPath();
+        this.ctx.arc(circle.x, circle.y, 2, 0, 2 * Math.PI, false);
+        this.ctx.fillStyle = 'cyan';
+        this.ctx.fill();
+        this.ctx.beginPath();
+        this.ctx.arc(intPoint.x, intPoint.y, 2, 0, 2 * Math.PI, false);
+        this.ctx.fillStyle = 'yellow';
+        this.ctx.fill();
+        this.ctx.beginPath();
+        this.ctx.arc(point1.x, point1.y, 2, 0, 2 * Math.PI, false);
+        this.ctx.fillStyle = 'cyan';
+        this.ctx.fill();
+        this.ctx.beginPath();
+        this.ctx.arc(point11.x, point11.y, 1, 0, 2 * Math.PI, false);
+        this.ctx.fillStyle = 'cyan';
+        this.ctx.fill();
+        this.ctx.beginPath();
+        this.ctx.moveTo(point1.x, point1.y);
+        this.ctx.lineTo(intPoint.x, intPoint.y);
+        this.ctx.strokeStyle = 'yellow';
+        this.ctx.stroke();
       }
-    };
+      return {
+        handlePoint: {
+          x: intPoint.x,
+          y: intPoint.y
+        },
+        circlePoint: {
+          x: point1.x,
+          y: point1.y
+        }
+      };
+    } else {
+
+    }
   };
 
   Goo.prototype.intersection = function(line1, line2) {
