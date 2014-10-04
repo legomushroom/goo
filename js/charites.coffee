@@ -46,7 +46,7 @@ class Goo
     @width  = parseInt(@canvas.getAttribute('width'), 10)
     @height = parseInt(@canvas.getAttribute('height'), 10)
     @deg = Math.PI/180
-    # @isDebug = true
+    @isDebug = true
 
   createCircles:->
     @circle1 = new Circle
@@ -253,30 +253,30 @@ class Goo
     if reactDistance < radius then return
 
 
-    if !isIntersect
-      @ctx.beginPath()
-      @ctx.moveTo(curvePoints1.circlePoint.x,curvePoints1.circlePoint.y)
-      x1 = curvePoints1.handlePoint.x
-      y1 = curvePoints1.handlePoint.y
-      x2 = curvePoints4.handlePoint.x
-      y2 = curvePoints4.handlePoint.y
-      x3 = curvePoints4.circlePoint.x
-      y3 = curvePoints4.circlePoint.y
-      @ctx.bezierCurveTo(x1,y1,x2,y2,x3,y3)
+    # if !isIntersect
+    #   @ctx.beginPath()
+    #   @ctx.moveTo(curvePoints1.circlePoint.x,curvePoints1.circlePoint.y)
+    #   x1 = curvePoints1.handlePoint.x
+    #   y1 = curvePoints1.handlePoint.y
+    #   x2 = curvePoints4.handlePoint.x
+    #   y2 = curvePoints4.handlePoint.y
+    #   x3 = curvePoints4.circlePoint.x
+    #   y3 = curvePoints4.circlePoint.y
+    #   @ctx.bezierCurveTo(x1,y1,x2,y2,x3,y3)
 
-      @ctx.lineTo(curvePoints3.circlePoint.x,curvePoints3.circlePoint.y)
-      x1 = curvePoints3.handlePoint.x
-      y1 = curvePoints3.handlePoint.y
-      x2 = curvePoints2.handlePoint.x
-      y2 = curvePoints2.handlePoint.y
-      x3 = curvePoints2.circlePoint.x
-      y3 = curvePoints2.circlePoint.y
-      @ctx.bezierCurveTo(x1,y1,x2,y2,x3,y3)
-      @ctx.closePath()
+    #   @ctx.lineTo(curvePoints3.circlePoint.x,curvePoints3.circlePoint.y)
+    #   x1 = curvePoints3.handlePoint.x
+    #   y1 = curvePoints3.handlePoint.y
+    #   x2 = curvePoints2.handlePoint.x
+    #   y2 = curvePoints2.handlePoint.y
+    #   x3 = curvePoints2.circlePoint.x
+    #   y3 = curvePoints2.circlePoint.y
+    #   @ctx.bezierCurveTo(x1,y1,x2,y2,x3,y3)
+    #   @ctx.closePath()
 
-      @ctx.fillStyle = if @isDebug then "rgba(255, 255, 255, 0.5)" else '#999'
-      @ctx.fill()
-    else
+    #   @ctx.fillStyle = if @isDebug then "rgba(255, 255, 255, 0.5)" else '#999'
+    #   @ctx.fill()
+    if isIntersect
       @ctx.beginPath()
       @ctx.moveTo(curvePoints1.circlePoint.x,curvePoints1.circlePoint.y)
       x1 = curvePoints1.handlePoint.x

@@ -64,7 +64,8 @@ Goo = (function() {
     this.ctx = this.canvas.getContext('2d');
     this.width = parseInt(this.canvas.getAttribute('width'), 10);
     this.height = parseInt(this.canvas.getAttribute('height'), 10);
-    return this.deg = Math.PI / 180;
+    this.deg = Math.PI / 180;
+    return this.isDebug = true;
   };
 
   Goo.prototype.createCircles = function() {
@@ -248,28 +249,7 @@ Goo = (function() {
     if (reactDistance < radius) {
       return;
     }
-    if (!isIntersect) {
-      this.ctx.beginPath();
-      this.ctx.moveTo(curvePoints1.circlePoint.x, curvePoints1.circlePoint.y);
-      x1 = curvePoints1.handlePoint.x;
-      y1 = curvePoints1.handlePoint.y;
-      x2 = curvePoints4.handlePoint.x;
-      y2 = curvePoints4.handlePoint.y;
-      x3 = curvePoints4.circlePoint.x;
-      y3 = curvePoints4.circlePoint.y;
-      this.ctx.bezierCurveTo(x1, y1, x2, y2, x3, y3);
-      this.ctx.lineTo(curvePoints3.circlePoint.x, curvePoints3.circlePoint.y);
-      x1 = curvePoints3.handlePoint.x;
-      y1 = curvePoints3.handlePoint.y;
-      x2 = curvePoints2.handlePoint.x;
-      y2 = curvePoints2.handlePoint.y;
-      x3 = curvePoints2.circlePoint.x;
-      y3 = curvePoints2.circlePoint.y;
-      this.ctx.bezierCurveTo(x1, y1, x2, y2, x3, y3);
-      this.ctx.closePath();
-      this.ctx.fillStyle = this.isDebug ? "rgba(255, 255, 255, 0.5)" : '#999';
-      return this.ctx.fill();
-    } else {
+    if (isIntersect) {
       this.ctx.beginPath();
       this.ctx.moveTo(curvePoints1.circlePoint.x, curvePoints1.circlePoint.y);
       x1 = curvePoints1.handlePoint.x;
