@@ -119,33 +119,13 @@ Goo = (function() {
       x: circle2.x + Math.cos(angle + angleShift2) * circle2.radius,
       y: circle2.y + Math.sin(angle + angleShift2) * circle2.radius
     };
-    if (this.isDebug) {
-      this.ctx.beginPath();
-      this.ctx.arc(point1.x, point1.y, 2, 0, 2 * Math.PI, false);
-      this.ctx.arc(point2.x, point2.y, 2, 0, 2 * Math.PI, false);
-      this.ctx.fillStyle = 'deeppink';
-      this.ctx.fill();
-    }
     middlePoint = {
       x: (point1.x + point2.x) / 2,
       y: (point1.y + point2.y) / 2
     };
-    if (this.isDebug) {
-      this.ctx.beginPath();
-      this.ctx.arc(middlePoint.x, middlePoint.y, 2, 0, 2 * Math.PI, false);
-      this.ctx.fillStyle = 'cyan';
-      this.ctx.fill();
-    }
     dx = Math.abs(point1.x - point2.x);
     dy = Math.abs(point1.y - point2.y);
     radius = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)) / 2;
-    if (this.isDebug) {
-      this.ctx.beginPath();
-      this.ctx.arc(middlePoint.x, middlePoint.y, radius, 0, 2 * Math.PI, false);
-      this.ctx.strokeStyle = 'cyan';
-      this.ctx.lineWidth = .25;
-      this.ctx.stroke();
-    }
     middleLinePoint1 = {
       x: middlePoint.x + Math.cos(angle + (90 * this.deg)) * radius,
       y: middlePoint.y + Math.sin(angle + (90 * this.deg)) * radius
@@ -154,13 +134,6 @@ Goo = (function() {
       x: middlePoint.x + Math.cos(angle + (-90 * this.deg)) * radius,
       y: middlePoint.y + Math.sin(angle + (-90 * this.deg)) * radius
     };
-    if (this.isDebug) {
-      this.ctx.beginPath();
-      this.ctx.arc(middleLinePoint1.x, middleLinePoint1.y, 2, 0, 2 * Math.PI, false);
-      this.ctx.arc(middleLinePoint2.x, middleLinePoint2.y, 2, 0, 2 * Math.PI, false);
-      this.ctx.fillStyle = 'orange';
-      this.ctx.fill();
-    }
     dX = circle1.x - circle2.x;
     dY = circle1.y - circle2.y;
     len = Math.sqrt(Math.pow(dX, 2) + Math.pow(dY, 2));
@@ -173,6 +146,13 @@ Goo = (function() {
     isIntersectX = isRadiusIntX ^ isCirclesIntX;
     isIntersectY = isRadiusIntY ^ isCirclesIntY;
     isIntersect = isIntersectX || isIntersectY;
+    if (this.isDebug && !isIntersect) {
+      this.ctx.beginPath();
+      this.ctx.arc(point1.x, point1.y, 2, 0, 2 * Math.PI, false);
+      this.ctx.arc(point2.x, point2.y, 2, 0, 2 * Math.PI, false);
+      this.ctx.fillStyle = 'deeppink';
+      this.ctx.fill();
+    }
     if (isIntersect) {
       intPoints = this.circlesIntersecton(circle2, circle1);
       middleLinePoint1 = {
@@ -194,6 +174,27 @@ Goo = (function() {
         this.ctx.fillStyle = 'deeppink';
         this.ctx.fill();
       }
+    } else {
+      if (this.isDebug) {
+        this.ctx.beginPath();
+        this.ctx.arc(middleLinePoint1.x, middleLinePoint1.y, 2, 0, 2 * Math.PI, false);
+        this.ctx.arc(middleLinePoint2.x, middleLinePoint2.y, 2, 0, 2 * Math.PI, false);
+        this.ctx.fillStyle = 'orange';
+        this.ctx.fill();
+      }
+      if (this.isDebug) {
+        this.ctx.beginPath();
+        this.ctx.arc(middlePoint.x, middlePoint.y, radius, 0, 2 * Math.PI, false);
+        this.ctx.strokeStyle = 'cyan';
+        this.ctx.lineWidth = .25;
+        this.ctx.stroke();
+      }
+      if (this.isDebug) {
+        this.ctx.beginPath();
+        this.ctx.arc(middlePoint.x, middlePoint.y, 2, 0, 2 * Math.PI, false);
+        this.ctx.fillStyle = 'cyan';
+        this.ctx.fill();
+      }
     }
     middleLine = {
       start: middleLinePoint1,
@@ -207,7 +208,7 @@ Goo = (function() {
       this.ctx.strokeStyle = 'orange';
       this.ctx.stroke();
     }
-    if (this.isDebug) {
+    if (this.isDebug && !isIntersect) {
       this.ctx.beginPath();
       this.ctx.arc(middlePoint.x, middlePoint.y, reactDistance, 0, 2 * Math.PI, false);
       this.ctx.strokeStyle = 'yellow';
@@ -274,7 +275,7 @@ Goo = (function() {
   };
 
   Goo.prototype.circleMath = function(o) {
-    var absOffsetAngle, angle, circle, dist, dx, dy, handlesAngle, intPoint, intersectAngle, isInt, isSmall, line1, middleLine, offset, offsetAngle, point1, point11, point1Angle, side;
+    var absOffsetAngle, angle, circle, dist, dx, dy, handlesAngle, intPoint, intersectAngle, isInt, isSmall, line1, middleLine, offset, offsetAngle, point1, point11, point1Angle, side, x, y;
     circle = o.circle;
     angle = o.angle;
     middleLine = o.middleLine;
@@ -339,7 +340,17 @@ Goo = (function() {
         }
       };
     } else {
-
+      y = middleLine.end.y - circle.y;
+      x = circle.x - middleLine.end.x;
+      angle = Math.atan2(y, x);
+      if (this.isDebug) {
+        this.ctx.beginPath();
+        x = circle.x + Math.cos(angle - (25 * this.deg) - (180 * this.deg)) * circle.radius;
+        y = circle.y + Math.sin(angle - (25 * this.deg) - (180 * this.deg)) * circle.radius;
+        this.ctx.arc(x, y, 2, 0, 2 * Math.PI, false);
+        this.ctx.fillStyle = 'yellow';
+        return this.ctx.fill();
+      }
     }
   };
 

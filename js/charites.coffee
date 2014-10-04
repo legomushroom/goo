@@ -95,34 +95,20 @@ class Goo
     point2 =
       x: circle2.x + Math.cos(angle+angleShift2)*circle2.radius
       y: circle2.y + Math.sin(angle+angleShift2)*circle2.radius
-    if @isDebug
-      @ctx.beginPath()
-      @ctx.arc(point1.x, point1.y, 2, 0, 2*Math.PI, false)
-      @ctx.arc(point2.x, point2.y, 2, 0, 2*Math.PI, false)
-      @ctx.fillStyle = 'deeppink'
-      @ctx.fill()
+    
 
     # FIND MIDDLE Line
     #   find middle point
     middlePoint =
       x: (point1.x + point2.x)/2
       y: (point1.y + point2.y)/2
-    if @isDebug
-      @ctx.beginPath()
-      @ctx.arc(middlePoint.x, middlePoint.y, 2, 0, 2*Math.PI, false)
-      @ctx.fillStyle = 'cyan'
-      @ctx.fill()
+    
     #   find middle circle radius
     dx = Math.abs point1.x - point2.x
     dy = Math.abs point1.y - point2.y
     radius = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2))/2
     
-    if @isDebug
-      @ctx.beginPath()
-      @ctx.arc(middlePoint.x, middlePoint.y, radius, 0, 2*Math.PI, false)
-      @ctx.strokeStyle = 'cyan'
-      @ctx.lineWidth = .25
-      @ctx.stroke()
+
     # find middle line
     middleLinePoint1 =
       x: middlePoint.x + Math.cos(angle+(90*@deg))*radius
@@ -130,12 +116,7 @@ class Goo
     middleLinePoint2 =
       x: middlePoint.x + Math.cos(angle+(-90*@deg))*radius
       y: middlePoint.y + Math.sin(angle+(-90*@deg))*radius
-    if @isDebug
-      @ctx.beginPath()
-      @ctx.arc(middleLinePoint1.x, middleLinePoint1.y, 2, 0, 2*Math.PI, false)
-      @ctx.arc(middleLinePoint2.x, middleLinePoint2.y, 2, 0, 2*Math.PI, false)
-      @ctx.fillStyle = 'orange'
-      @ctx.fill()
+
     
     dX = circle1.x - circle2.x
     dY = circle1.y - circle2.y
@@ -153,10 +134,37 @@ class Goo
     isIntersectY = isRadiusIntY ^ isCirclesIntY
     isIntersect = isIntersectX or isIntersectY
 
+    if @isDebug and !isIntersect
+      @ctx.beginPath()
+      @ctx.arc(point1.x, point1.y, 2, 0, 2*Math.PI, false)
+      @ctx.arc(point2.x, point2.y, 2, 0, 2*Math.PI, false)
+      @ctx.fillStyle = 'deeppink'
+      @ctx.fill()
+
     if isIntersect
       intPoints = @circlesIntersecton circle2, circle1
       middleLinePoint1 = x: intPoints[0], y: intPoints[2]
       middleLinePoint2 = x: intPoints[1], y: intPoints[3]
+
+      # y = middleLinePoint1.y - circle2.y
+      # x = circle2.x - middleLinePoint1.x
+      # angle = Math.atan2 y, x
+
+      # y = middleLinePoint2.y - circle2.y
+      # x = circle2.x - middleLinePoint2.x
+      # angle2 = Math.atan2 y, x
+      # # console.log (angle*180)/Math.PI
+
+      # if @isDebug
+      #   @ctx.beginPath()
+      #   x = circle2.x + Math.cos(angle-(25*@deg)-(180*@deg))*circle2.radius
+      #   y = circle2.y + Math.sin(angle-(25*@deg)-(180*@deg))*circle2.radius
+      #   x2 = circle2.x + Math.cos(angle2+(25*@deg)-(180*@deg))*circle2.radius
+      #   y2 = circle2.y + Math.sin(angle2+(25*@deg)-(180*@deg))*circle2.radius
+      #   @ctx.arc(x, y, 2, 0, 2*Math.PI, false)
+      #   @ctx.arc(x2, y2, 2, 0, 2*Math.PI, false)
+      #   @ctx.fillStyle = 'yellow'
+      #   @ctx.fill()
 
       middlePoint =
         x: (middleLinePoint1.x + middleLinePoint2.x)/2
@@ -167,6 +175,26 @@ class Goo
         @ctx.arc(middleLinePoint1.x, middleLinePoint1.y, 2, 0, 2*Math.PI, false)
         @ctx.arc(middleLinePoint2.x, middleLinePoint2.y, 2, 0, 2*Math.PI, false)
         @ctx.fillStyle = 'deeppink'
+        @ctx.fill()
+    else
+      if @isDebug
+        @ctx.beginPath()
+        @ctx.arc(middleLinePoint1.x, middleLinePoint1.y, 2, 0, 2*Math.PI, false)
+        @ctx.arc(middleLinePoint2.x, middleLinePoint2.y, 2, 0, 2*Math.PI, false)
+        @ctx.fillStyle = 'orange'
+        @ctx.fill()
+
+      if @isDebug
+        @ctx.beginPath()
+        @ctx.arc(middlePoint.x, middlePoint.y, radius, 0, 2*Math.PI, false)
+        @ctx.strokeStyle = 'cyan'
+        @ctx.lineWidth = .25
+        @ctx.stroke()
+
+      if @isDebug
+        @ctx.beginPath()
+        @ctx.arc(middlePoint.x, middlePoint.y, 2, 0, 2*Math.PI, false)
+        @ctx.fillStyle = 'cyan'
         @ctx.fill()
     
     middleLine =
@@ -184,7 +212,7 @@ class Goo
     # console.log distance
     # distance = Math.max distance, 0
 
-    if @isDebug
+    if @isDebug and !isIntersect
       @ctx.beginPath()
       @ctx.arc(middlePoint.x, middlePoint.y, reactDistance, 0, 2*Math.PI, false)
       @ctx.strokeStyle = 'yellow'
@@ -315,6 +343,17 @@ class Goo
         circlePoint: x: point1.x, y: point1.y
       }
     else
+      y = middleLine.end.y - circle.y
+      x = circle.x - middleLine.end.x
+      angle = Math.atan2 y, x
+
+      if @isDebug
+        @ctx.beginPath()
+        x = circle.x + Math.cos(angle-(25*@deg)-(180*@deg))*circle.radius
+        y = circle.y + Math.sin(angle-(25*@deg)-(180*@deg))*circle.radius
+        @ctx.arc(x, y, 2, 0, 2*Math.PI, false)
+        @ctx.fillStyle = 'yellow'
+        @ctx.fill()
       # point1 =
       #   x: circle.x + Math.cos(point1Angle+offsetAngle)*circle.radius
       #   y: circle.y + Math.sin(point1Angle+offsetAngle)*circle.radius
