@@ -253,29 +253,29 @@ class Goo
     if reactDistance < radius then return
 
 
-    # if !isIntersect
-    #   @ctx.beginPath()
-    #   @ctx.moveTo(curvePoints1.circlePoint.x,curvePoints1.circlePoint.y)
-    #   x1 = curvePoints1.handlePoint.x
-    #   y1 = curvePoints1.handlePoint.y
-    #   x2 = curvePoints4.handlePoint.x
-    #   y2 = curvePoints4.handlePoint.y
-    #   x3 = curvePoints4.circlePoint.x
-    #   y3 = curvePoints4.circlePoint.y
-    #   @ctx.bezierCurveTo(x1,y1,x2,y2,x3,y3)
+    if !isIntersect
+      @ctx.beginPath()
+      @ctx.moveTo(curvePoints1.circlePoint.x,curvePoints1.circlePoint.y)
+      x1 = curvePoints1.handlePoint.x
+      y1 = curvePoints1.handlePoint.y
+      x2 = curvePoints4.handlePoint.x
+      y2 = curvePoints4.handlePoint.y
+      x3 = curvePoints4.circlePoint.x
+      y3 = curvePoints4.circlePoint.y
+      @ctx.bezierCurveTo(x1,y1,x2,y2,x3,y3)
 
-    #   @ctx.lineTo(curvePoints3.circlePoint.x,curvePoints3.circlePoint.y)
-    #   x1 = curvePoints3.handlePoint.x
-    #   y1 = curvePoints3.handlePoint.y
-    #   x2 = curvePoints2.handlePoint.x
-    #   y2 = curvePoints2.handlePoint.y
-    #   x3 = curvePoints2.circlePoint.x
-    #   y3 = curvePoints2.circlePoint.y
-    #   @ctx.bezierCurveTo(x1,y1,x2,y2,x3,y3)
-    #   @ctx.closePath()
+      @ctx.lineTo(curvePoints3.circlePoint.x,curvePoints3.circlePoint.y)
+      x1 = curvePoints3.handlePoint.x
+      y1 = curvePoints3.handlePoint.y
+      x2 = curvePoints2.handlePoint.x
+      y2 = curvePoints2.handlePoint.y
+      x3 = curvePoints2.circlePoint.x
+      y3 = curvePoints2.circlePoint.y
+      @ctx.bezierCurveTo(x1,y1,x2,y2,x3,y3)
+      @ctx.closePath()
 
-    #   @ctx.fillStyle = if @isDebug then "rgba(255, 255, 255, 0.5)" else '#999'
-    #   @ctx.fill()
+      @ctx.fillStyle = if @isDebug then "rgba(255, 255, 255, 0.5)" else '#999'
+      @ctx.fill()
     if isIntersect
       @ctx.beginPath()
       @ctx.moveTo(curvePoints1.circlePoint.x,curvePoints1.circlePoint.y)
@@ -328,43 +328,6 @@ class Goo
       intersectAngle = if middleLine.center.x - point1.x > 0
         Math.atan dy/dx
       else Math.atan(dy/dx) + 180*@deg
-
-      line1 =
-        start: point1
-        end:   point11
-      intPoint = @intersection line1, middleLine
-
-      if @isDebug
-        @ctx.beginPath()
-        @ctx.arc(circle.x, circle.y, 2, 0, 2*Math.PI, false)
-        @ctx.fillStyle = 'cyan'
-        @ctx.fill()
-
-        @ctx.beginPath()
-        @ctx.arc(intPoint.x, intPoint.y, 2, 0, 2*Math.PI, false)
-        @ctx.fillStyle = 'yellow'
-        @ctx.fill()
-
-        @ctx.beginPath()
-        @ctx.arc(point1.x, point1.y, 2, 0, 2*Math.PI, false)
-        @ctx.fillStyle = 'cyan'
-        @ctx.fill()
-
-        @ctx.beginPath()
-        @ctx.arc(point11.x, point11.y, 1, 0, 2*Math.PI, false)
-        @ctx.fillStyle = 'cyan'
-        @ctx.fill()
-
-        @ctx.beginPath()
-        @ctx.moveTo(point1.x, point1.y)
-        @ctx.lineTo(intPoint.x, intPoint.y)
-        @ctx.strokeStyle = 'yellow'
-        @ctx.stroke()
-
-      return {
-        handlePoint: x: intPoint.x, y: intPoint.y
-        circlePoint: x: point1.x, y: point1.y
-      }
     else
       angle = 15*@deg
       if side is 'top'
@@ -395,42 +358,42 @@ class Goo
         Math.atan dy/dx
       else Math.atan(dy/dx) + 180*@deg
 
-      line1 =
-        start: point1
-        end:   point11
-      intPoint = @intersection line1, middleLine
+    line1 =
+      start: point1
+      end:   point11
+    intPoint = @intersection line1, middleLine
 
-      if @isDebug
-        @ctx.beginPath()
-        @ctx.arc(circle.x, circle.y, 2, 0, 2*Math.PI, false)
-        @ctx.fillStyle = 'cyan'
-        @ctx.fill()
+    if @isDebug
+      @ctx.beginPath()
+      @ctx.arc(circle.x, circle.y, 2, 0, 2*Math.PI, false)
+      @ctx.fillStyle = 'cyan'
+      @ctx.fill()
 
-        @ctx.beginPath()
-        @ctx.arc(intPoint.x, intPoint.y, 2, 0, 2*Math.PI, false)
-        @ctx.fillStyle = 'yellow'
-        @ctx.fill()
+      @ctx.beginPath()
+      @ctx.arc(intPoint.x, intPoint.y, 2, 0, 2*Math.PI, false)
+      @ctx.fillStyle = 'yellow'
+      @ctx.fill()
 
-        @ctx.beginPath()
-        @ctx.arc(point1.x, point1.y, 2, 0, 2*Math.PI, false)
-        @ctx.fillStyle = 'cyan'
-        @ctx.fill()
+      @ctx.beginPath()
+      @ctx.arc(point1.x, point1.y, 2, 0, 2*Math.PI, false)
+      @ctx.fillStyle = 'cyan'
+      @ctx.fill()
 
-        @ctx.beginPath()
-        @ctx.arc(point11.x, point11.y, 1, 0, 2*Math.PI, false)
-        @ctx.fillStyle = 'cyan'
-        @ctx.fill()
+      @ctx.beginPath()
+      @ctx.arc(point11.x, point11.y, 1, 0, 2*Math.PI, false)
+      @ctx.fillStyle = 'cyan'
+      @ctx.fill()
 
-        @ctx.beginPath()
-        @ctx.moveTo(point1.x, point1.y)
-        @ctx.lineTo(intPoint.x, intPoint.y)
-        @ctx.strokeStyle = 'yellow'
-        @ctx.stroke()
+      @ctx.beginPath()
+      @ctx.moveTo(point1.x, point1.y)
+      @ctx.lineTo(intPoint.x, intPoint.y)
+      @ctx.strokeStyle = 'yellow'
+      @ctx.stroke()
 
-      return {
-        handlePoint: x: intPoint.x, y: intPoint.y
-        circlePoint: x: point1.x, y: point1.y
-      }
+    return {
+      handlePoint: x: intPoint.x, y: intPoint.y
+      circlePoint: x: point1.x, y: point1.y
+    }
 
 
   intersection:(line1, line2)->
