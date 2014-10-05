@@ -64,8 +64,7 @@ Goo = (function() {
     this.ctx = this.canvas.getContext('2d');
     this.width = parseInt(this.canvas.getAttribute('width'), 10);
     this.height = parseInt(this.canvas.getAttribute('height'), 10);
-    this.deg = Math.PI / 180;
-    return this.isDebug = true;
+    return this.deg = Math.PI / 180;
   };
 
   Goo.prototype.createCircles = function() {
@@ -324,7 +323,7 @@ Goo = (function() {
       dy = point1.y - point11.y;
       intersectAngle = middleLine.center.x - point1.x > 0 ? Math.atan(dy / dx) : Math.atan(dy / dx) + 180 * this.deg;
     } else {
-      angle = 15 * this.deg;
+      angle = 5 * this.deg;
       if (side === 'top') {
         point = middleLine.start;
         angleOffset = angle;

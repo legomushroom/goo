@@ -7,7 +7,9 @@ TWEEN  = require './vendor/tween'
 #   change circle sizes on connection
 #   GC fix
 #   make it work on diff y
-
+#   when one circle is inside another
+#   calc side helper angles depending on
+#   how much the circle is inside another
 
 class Circle
   constructor:(@o={})-> @vars(); @draw()
@@ -46,7 +48,7 @@ class Goo
     @width  = parseInt(@canvas.getAttribute('width'), 10)
     @height = parseInt(@canvas.getAttribute('height'), 10)
     @deg = Math.PI/180
-    @isDebug = true
+    # @isDebug = true
 
   createCircles:->
     @circle1 = new Circle
@@ -329,7 +331,7 @@ class Goo
         Math.atan dy/dx
       else Math.atan(dy/dx) + 180*@deg
     else
-      angle = 15*@deg
+      angle = 5*@deg
       if side is 'top'
         point = middleLine.start
         angleOffset = angle
