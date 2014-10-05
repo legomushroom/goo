@@ -252,7 +252,6 @@ class Goo
     
     if reactDistance < radius then return
 
-
     if !isIntersect
       @ctx.beginPath()
       @ctx.moveTo(curvePoints1.circlePoint.x,curvePoints1.circlePoint.y)
@@ -276,6 +275,7 @@ class Goo
 
       @ctx.fillStyle = if @isDebug then "rgba(255, 255, 255, 0.5)" else '#999'
       @ctx.fill()
+
     if isIntersect
       @ctx.beginPath()
       @ctx.moveTo(curvePoints1.circlePoint.x,curvePoints1.circlePoint.y)
@@ -343,7 +343,21 @@ class Goo
       x = circle.x - point.x
       angle = Math.atan2 y, x
 
+      if !isRight
+        normAngle = angle*180/Math.PI
+        # console.log normAngle
+        if normAngle < 0
+          if normAngle > -40
+            angle = -40*@deg
+        else
+          if normAngle < 40
+            angle = 40*@deg
+
+
+      # if angle*180/Math.PI < 40 then angle = 40*@deg
+
       point1Angle = angle+angleOffset-(180*@deg)
+
       point1 =
         x: circle.x + Math.cos(point1Angle)*circle.radius
         y: circle.y + Math.sin(point1Angle)*circle.radius

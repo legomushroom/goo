@@ -296,7 +296,7 @@ Goo = (function() {
   };
 
   Goo.prototype.circleMath = function(o) {
-    var absOffsetAngle, angle, angleOffset, circle, dist, dx, dy, handlesAngle, intPoint, intersectAngle, isInt, isRight, isSmall, line1, middleLine, offset, offsetAngle, point, point1, point11, point1Angle, side, x, y;
+    var absOffsetAngle, angle, angleOffset, circle, dist, dx, dy, handlesAngle, intPoint, intersectAngle, isInt, isRight, isSmall, line1, middleLine, normAngle, offset, offsetAngle, point, point1, point11, point1Angle, side, x, y;
     circle = o.circle;
     angle = o.angle;
     middleLine = o.middleLine;
@@ -338,6 +338,18 @@ Goo = (function() {
       y = point.y - circle.y;
       x = circle.x - point.x;
       angle = Math.atan2(y, x);
+      if (!isRight) {
+        normAngle = angle * 180 / Math.PI;
+        if (normAngle < 0) {
+          if (normAngle > -40) {
+            angle = -40 * this.deg;
+          }
+        } else {
+          if (normAngle < 40) {
+            angle = 40 * this.deg;
+          }
+        }
+      }
       point1Angle = angle + angleOffset - (180 * this.deg);
       point1 = {
         x: circle.x + Math.cos(point1Angle) * circle.radius,
