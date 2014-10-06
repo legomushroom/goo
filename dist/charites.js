@@ -296,7 +296,7 @@ Goo = (function() {
   };
 
   Goo.prototype.circleMath = function(o) {
-    var absOffsetAngle, angle, angleOffset, circle, dist, dx, dy, handlesAngle, intPoint, intersectAngle, isInt, isRight, isSmall, line1, middleLine, normAngle, offset, offsetAngle, point, point1, point11, point1Angle, side, x, y;
+    var absOffsetAngle, angle, angleOffset, circle, dist, dx, dy, gulp, handlesAngle, intPoint, intersectAngle, isInt, isRight, isSmall, line1, middleLine, normAngle, offset, offsetAngle, point, point1, point11, point1Angle, side, x, y;
     circle = o.circle;
     angle = o.angle;
     middleLine = o.middleLine;
@@ -324,10 +324,13 @@ Goo = (function() {
       dy = point1.y - point11.y;
       intersectAngle = middleLine.center.x - point1.x > 0 ? Math.atan(dy / dx) : Math.atan(dy / dx) + 180 * this.deg;
     } else {
-      if (!isRight) {
-        console.log(middleLine.center.x - circle.x);
+      gulp = (middleLine.center.x - circle.x) * (circle.radius / 100) / 56.225;
+      gulp = 1 - Math.abs(gulp);
+      console.log(gulp);
+      angle = 15 * gulp * this.deg;
+      if (isRight) {
+        angle = -angle;
       }
-      angle = 15 * this.deg;
       if (side === 'top') {
         point = middleLine.start;
         angleOffset = angle;

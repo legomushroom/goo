@@ -331,9 +331,15 @@ class Goo
         Math.atan dy/dx
       else Math.atan(dy/dx) + 180*@deg
     else
-      if !isRight
-        console.log middleLine.center.x - circle.x
-      angle = 15*@deg
+      # if !isRight
+      gulp = (middleLine.center.x-circle.x)*((circle.radius)/100)/56.225
+      gulp = 1 - Math.abs gulp
+      # angle = (45*gulp/100)*@deg
+      console.log gulp
+      angle = 15*gulp*@deg
+      if isRight
+        angle = -angle
+      # else angle = 15*@deg
       if side is 'top'
         point = middleLine.start
         angleOffset = angle
