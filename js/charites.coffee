@@ -48,7 +48,7 @@ class Goo
     @width  = parseInt(@canvas.getAttribute('width'), 10)
     @height = parseInt(@canvas.getAttribute('height'), 10)
     @deg = Math.PI/180
-    # @isDebug = true
+    @isDebug = true
 
   createCircles:->
     @circle1 = new Circle
@@ -331,7 +331,9 @@ class Goo
         Math.atan dy/dx
       else Math.atan(dy/dx) + 180*@deg
     else
-      angle = 5*@deg
+      if !isRight
+        console.log middleLine.center.x - circle.x
+      angle = 15*@deg
       if side is 'top'
         point = middleLine.start
         angleOffset = angle
