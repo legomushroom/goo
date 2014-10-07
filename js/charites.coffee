@@ -363,11 +363,8 @@ class Goo
           if normAngle < 40
             angle = 40*@deg
 
-
       # if angle*180/Math.PI < 40 then angle = 40*@deg
-
       point1Angle = angle+angleOffset-(180*@deg)
-
       point1 =
         x: circle.x + Math.cos(point1Angle)*circle.radius
         y: circle.y + Math.sin(point1Angle)*circle.radius
