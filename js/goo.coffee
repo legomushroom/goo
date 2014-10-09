@@ -416,7 +416,6 @@ class Goo
       circlePoint: x: point1.x, y: point1.y
     }
 
-
   intersection:(line1, line2)->
     result = {}
     dm1 = (line2.end.y - line2.start.y) * (line1.end.x - line1.start.x)
@@ -477,7 +476,6 @@ class Goo
     
     # Now determine the offsets of the intersection points from
     #   * point 2.
-
     rx = -dy * (h / d)
     ry = dx * (h / d)
     
