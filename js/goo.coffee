@@ -2,7 +2,6 @@ require './polyfills'
 h      = require './helpers'
 TWEEN  = require './vendor/tween'
 
-
 # TODO:
 #   change circle sizes on connection
 #   GC fix
